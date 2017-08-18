@@ -210,6 +210,12 @@ public class PluginManager {
         return list;
     }
 
+    public void removePlugin(String packageName){
+        if (this.mPlugins.containsKey(packageName)){
+            this.mPlugins.remove(packageName);
+        }
+    }
+
     public Context getHostContext() {
         return this.mContext;
     }

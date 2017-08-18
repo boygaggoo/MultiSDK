@@ -10,6 +10,22 @@ public class SPUtil {
     return context.getSharedPreferences(SPConfig.SP_NAME,Context.MODE_PRIVATE);
   }
 
+  public static void saveInt(Context context, String type, String key, int val){
+    saveConfig4Int(context, type + key, val);
+  }
+
+  public static void saveString(Context context, String type, String key, String val){
+    saveConfig4String(context,type + key,val);
+  }
+
+  public static int getInt(Context context, String type, String key){
+    return getConfig4Int(context, type + key);
+  }
+
+  public static String getString(Context context, String type, String key){
+    return getConfig4String(context, type + key);
+  }
+
   public static void saveConfig4Int(Context context, String key, int val) {
     SharedPreferences spQY = getSP(context);
     Editor editor = spQY.edit();
@@ -37,8 +53,6 @@ public class SPUtil {
   private static class SPConfig{
 
     static final String SP_NAME = "multi_sdk_sp_name";
-    static final String SP_LAST_INIT_TIME = "multi_sdk_sp_last_init_time";
-    static final String SP_SDK_VERSION_NAME = "multi_sdk_sp_sdk_version_name";
 
   }
 }

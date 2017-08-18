@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 import android.util.Log;
+import com.multisdk.library.network.obj.InitInfo;
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class DBUtil {
@@ -48,6 +50,7 @@ public class DBUtil {
     return mDBHelper != null && mDB != null;
   }
 
+// config start
   public String queryCfgValueByKey(String key) {
     String ret = "";
     if (mDB == null) {
@@ -96,9 +99,11 @@ public class DBUtil {
   public static final String CONFIG_KEY_APP_ID = "config_key_app_id";
   public static final String CONFIG_KEY_CHANNEL_ID = "config_key_channel_id";
   public static final String CONFIG_KEY_P_ID = "config_key_p_id";
+// config end.
 
   private static final String DB_NAME = "multi.db";
   private static final int DB_VERSION = 1;
+
   private static final String CONFIG_TABLE = "multi_sdk_config_table";
   private static final String CONFIG_KEY = "multi_sdk_config_key";
   private static final String CONFIG_VALUE = "multi_sdk_config_value";
@@ -120,12 +125,24 @@ public class DBUtil {
           + CONFIG_VALUE
           + " text)";
       db.execSQL(sql);
+
+      //String init = "CRETE TABLE IF NOT EXISTS " + INIT_TABLE + " (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+      //    + INIT_TYPE + " INTEGER, "
+      //    + INIT_SW + " INTEGER, "
+      //    + INIT_RT + " INTEGER, "
+      //    + INIT_AT + " INTEGER, "
+      //    + INIT_UP + " INTEGER, "
+      //    + INIT_V + " INTEGER, "
+      //    + INIT_DL + " text, "
+      //    + INIT_M5 + " text) ";
+      //db.execSQL(init);
     }
 
     @Override public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
       try {
         if (newVersion > oldVersion) {
           db.execSQL("drop table if exists " + CONFIG_TABLE);
+          //db.execSQL("drop table if exists " + INIT_TABLE);
         }
         onCreate(db);
       } catch (Exception e) {

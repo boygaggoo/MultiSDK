@@ -1,16 +1,16 @@
 package com.multisdk.library.network.serializer;
 
 import android.util.SparseArray;
+import com.multisdk.library.network.protocol.GetCommConfigReq;
+import com.multisdk.library.network.protocol.GetCommConfigResp;
 
 public class MessageRecognizer {
 
   private static SparseArray<Class> mMessageClasses = new SparseArray<>();
 
   static {
-    //mMessageClasses.put(100001, GetZoneServerReq.class);
-    //mMessageClasses.put(200001, GetZoneServerResp.class);
-    //mMessageClasses.put(101001, GetCommonConfigReq.class);
-    //mMessageClasses.put(201001, GetCommonConfigResp.class);
+    mMessageClasses.put(1, GetCommConfigReq.class);
+    mMessageClasses.put(2, GetCommConfigResp.class);
   }
 
   public static Class getClassByCode(int code) {
