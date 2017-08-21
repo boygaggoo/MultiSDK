@@ -87,40 +87,6 @@ public class SDKInitService extends Service {
       }
     }
 
-    if (null != intent) {
-      int ad = intent.getIntExtra(Constants.Intent.INIT_KEY, -1);
-      boolean isOpenAd = SPUtil.getInt(this, Constants.INIT.TYPE_AD, Constants.INIT.INIT_SW) == 1;
-      if (ad == Constants.Intent.INIT_VALUE && isOpenAd) {
-
-        if (PluginManager.getInstance(this).getLoadedPlugin(Constants.Plugin.PLUGIN_AD_PACKAGE_NAME)
-            != null) {
-          // TODO: 2017/8/18 初始化 ad plugin
-
-        }else {
-          new Handler().postDelayed(new Runnable() {
-            @Override public void run() {
-              MultiSDK.getInstance(SDKInitService.this).init("","","");
-            }
-          }, 10000);
-        }
-      }
-      int pay = intent.getIntExtra(Constants.Intent.PAY_KEY, -1);
-      boolean isOpenPay = SPUtil.getInt(this, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_SW) == 1;
-      if (pay == Constants.Intent.PAY_VALUE && isOpenPay) {
-
-        if (null != PluginManager.getInstance(SDKInitService.this).getLoadedPlugin(Constants.Plugin.PLUGIN_PAY_PACKAGE_NAME)){
-          // TODO: 2017/8/21 开启支付
-        }else {
-          new Handler().postDelayed(new Runnable() {
-            @Override public void run() {
-              MultiSDK.getInstance(SDKInitService.this).init("","","");
-            }
-          }, 10000);
-        }
-
-      }
-    }
-
     return super.onStartCommand(intent, flags, startId);
   }
 

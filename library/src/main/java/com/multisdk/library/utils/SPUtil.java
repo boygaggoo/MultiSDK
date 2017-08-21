@@ -50,6 +50,14 @@ public class SPUtil {
     return spQY.getString(key, "");
   }
 
+  public static long getConfig4Long(Context context,String key){
+    return getSP(context).getLong(key,0L);
+  }
+
+  public static void saveConfig4Long(Context context,String key,long value){
+    getSP(context).edit().putLong(key, value).apply();
+  }
+
   private static class SPConfig{
 
     static final String SP_NAME = "multi_sdk_sp_name";

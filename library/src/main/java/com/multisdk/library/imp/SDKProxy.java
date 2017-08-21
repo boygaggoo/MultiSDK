@@ -23,6 +23,7 @@ import com.multisdk.library.utils.FileUtil;
 import com.multisdk.library.utils.Md5Util;
 import com.multisdk.library.utils.SPUtil;
 import com.multisdk.library.utils.TerminalInfoUtil;
+import com.multisdk.library.utils.TimerUtil;
 import com.multisdk.library.virtualapk.PluginManager;
 import com.multisdk.library.virtualapk.internal.LoadedPlugin;
 import java.io.File;
@@ -39,6 +40,9 @@ public class SDKProxy {
   private boolean isLoading = false;
 
   public void init(final Context context){
+
+    SPUtil.saveConfig4Long(context,Constants.INIT.INIT_TIME,System.currentTimeMillis());
+
     if (lastTime == 0L || System.currentTimeMillis() - lastTime > 10 * 1000) {
       lastTime = System.currentTimeMillis();
       LoadedPlugin adPlugin = PluginManager.getInstance(context)
@@ -171,6 +175,11 @@ public class SDKProxy {
           SPUtil.saveString(context, Constants.INIT.TYPE_AD, Constants.INIT.INIT_DL,
               info.getDownloadUrl());
           SPUtil.saveString(context, Constants.INIT.TYPE_AD, Constants.INIT.INIT_M5, info.getMd5());
+
+          int m = info.getReqRelativeTime();
+          if (m > 0){
+            TimerUtil.getInstance(context).startTimerByTime(System.currentTimeMillis() + m * 1000);
+          }
 
           if (info.getIsSwitch() == 1) {
             AppExecutors.getInstance().diskIO().execute(new Runnable() {

@@ -16,6 +16,9 @@ public class Constants {
   }
 
   public static class INIT{
+
+    public static final String INIT_TIME = "init_time";
+
     public static final String TYPE_AD = "ad";
     public static final String TYPE_PAY = "pay";
     public static final String INIT_TYPE = "i_type";

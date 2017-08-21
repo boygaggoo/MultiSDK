@@ -1,1 +1,1 @@
-include ':app', ':library', ':androidstub', ':plugin'
+include ':app', ':library', ':androidstub', ':plugin', ':pluginpay'
