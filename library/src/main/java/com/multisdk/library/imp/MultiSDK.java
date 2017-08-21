@@ -68,16 +68,10 @@ public class MultiSDK {
       return;
     }
 
-    Intent intent = new Intent();
-    intent.setClassName(mContext, SDKInitService.class.getName());
-    intent.putExtra(Constants.Intent.INIT_KEY,Constants.Intent.INIT_VALUE);
-    mContext.startService(intent);
+    SDKProxy.getInstance().init(mContext);
   }
 
   public void pay(Activity activity,String pointNum,int price,Callback callback){
-    Intent intent = new Intent();
-    intent.setClassName(mContext, SDKInitService.class.getName());
-    intent.putExtra(Constants.Intent.PAY_KEY,Constants.Intent.PAY_VALUE);
-    mContext.startService(intent);
+    SDKProxy.getInstance().payImpl(activity, pointNum, price, callback);
   }
 }

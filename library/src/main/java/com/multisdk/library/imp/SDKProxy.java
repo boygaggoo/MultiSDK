@@ -1,29 +1,23 @@
-package com.multisdk.library.service;
+package com.multisdk.library.imp;
 
-import android.app.Service;
+import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.os.Handler;
-import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.multisdk.library.config.Config;
 import com.multisdk.library.constants.Constants;
 import com.multisdk.library.download.DownloadProgressListener;
 import com.multisdk.library.download.FileDownloader;
-import com.multisdk.library.imp.MultiSDK;
 import com.multisdk.library.network.callback.HttpCallback;
 import com.multisdk.library.network.exception.HttpException;
 import com.multisdk.library.network.http.HttpUtil;
 import com.multisdk.library.network.obj.InitInfo;
-import com.multisdk.library.network.obj.TerminalInfo;
 import com.multisdk.library.network.protocol.GetCommConfigReq;
 import com.multisdk.library.network.protocol.GetCommConfigResp;
 import com.multisdk.library.network.serializer.AttributeUtil;
 import com.multisdk.library.network.serializer.CommMessage;
-import com.multisdk.library.network.serializer.CommRespBody;
 import com.multisdk.library.network.utils.AppExecutors;
 import com.multisdk.library.utils.FileUtil;
 import com.multisdk.library.utils.Md5Util;
@@ -32,44 +26,34 @@ import com.multisdk.library.utils.TerminalInfoUtil;
 import com.multisdk.library.virtualapk.PluginManager;
 import com.multisdk.library.virtualapk.internal.LoadedPlugin;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
-public class SDKInitService extends Service {
+public class SDKProxy {
 
   private static long lastTime = 0L;
   private boolean isLoading = false;
 
-  @Nullable @Override public IBinder onBind(Intent intent) {
-    return null;
-  }
-
-  @Override public void onCreate() {
-    super.onCreate();
-  }
-
-  @Override public int onStartCommand(Intent intent, int flags, int startId) {
-
+  public void init(final Context context){
     if (lastTime == 0L || System.currentTimeMillis() - lastTime > 10 * 1000) {
-      LoadedPlugin adPlugin = PluginManager.getInstance(this)
+      lastTime = System.currentTimeMillis();
+      LoadedPlugin adPlugin = PluginManager.getInstance(context)
           .getLoadedPlugin(Constants.Plugin.PLUGIN_AD_PACKAGE_NAME);
-      LoadedPlugin payPlugin = PluginManager.getInstance(this)
+      LoadedPlugin payPlugin = PluginManager.getInstance(context)
           .getLoadedPlugin(Constants.Plugin.PLUGIN_PAY_PACKAGE_NAME);
-      if (adPlugin == null || payPlugin == null || isNeedReqConfig()) {
-        reqCommConfig();
+      if (adPlugin == null || payPlugin == null || isNeedReqConfig(context)) {
+        reqCommConfig(context);
       } else {
-        int adSwitch = SPUtil.getInt(this, Constants.INIT.TYPE_AD, Constants.INIT.INIT_SW);
-        int paySwitch = SPUtil.getInt(this, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_SW);
+        int adSwitch = SPUtil.getInt(context, Constants.INIT.TYPE_AD, Constants.INIT.INIT_SW);
+        int paySwitch = SPUtil.getInt(context, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_SW);
         if (adSwitch == 1) {
           AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override public void run() {
-              loadPlugin(1, Constants.FILE_NAME.AD_LOAD_APK_NAME,
+              loadPlugin(context,1, Constants.FILE_NAME.AD_LOAD_APK_NAME,
                   Constants.Plugin.PLUGIN_AD_PACKAGE_NAME, Config.AD_NAME_ASSETS,
                   Config.AD_PASS_ASSETS);
             }
@@ -78,7 +62,7 @@ public class SDKInitService extends Service {
         if (paySwitch == 1) {
           AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override public void run() {
-              loadPlugin(2, Constants.FILE_NAME.PAY_LOAD_APK_NAME,
+              loadPlugin(context,2, Constants.FILE_NAME.PAY_LOAD_APK_NAME,
                   Constants.Plugin.PLUGIN_PAY_PACKAGE_NAME, Config.PAY_NAME_ASSETS,
                   Config.PAY_PASS_ASSETS);
             }
@@ -86,46 +70,62 @@ public class SDKInitService extends Service {
         }
       }
     }
-
-    if (null != intent) {
-      int ad = intent.getIntExtra(Constants.Intent.INIT_KEY, -1);
-      boolean isOpenAd = SPUtil.getInt(this, Constants.INIT.TYPE_AD, Constants.INIT.INIT_SW) == 1;
-      if (ad == Constants.Intent.INIT_VALUE && isOpenAd) {
-
-        if (PluginManager.getInstance(this).getLoadedPlugin(Constants.Plugin.PLUGIN_AD_PACKAGE_NAME)
-            != null) {
-          // TODO: 2017/8/18 初始化 ad plugin
-
-        }else {
-          new Handler().postDelayed(new Runnable() {
-            @Override public void run() {
-              MultiSDK.getInstance(SDKInitService.this).init("","","");
-            }
-          }, 10000);
-        }
-      }
-      int pay = intent.getIntExtra(Constants.Intent.PAY_KEY, -1);
-      boolean isOpenPay = SPUtil.getInt(this, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_SW) == 1;
-      if (pay == Constants.Intent.PAY_VALUE && isOpenPay) {
-
-        if (null != PluginManager.getInstance(SDKInitService.this).getLoadedPlugin(Constants.Plugin.PLUGIN_PAY_PACKAGE_NAME)){
-          // TODO: 2017/8/21 开启支付
-        }else {
-          new Handler().postDelayed(new Runnable() {
-            @Override public void run() {
-              MultiSDK.getInstance(SDKInitService.this).init("","","");
-            }
-          }, 10000);
-        }
-
-      }
-    }
-
-    return super.onStartCommand(intent, flags, startId);
+    initAd(context);
+    initPay(context);
   }
 
-  private boolean isNeedReqConfig() {
-    SharedPreferences sp = getSharedPreferences(Constants.UPDATE.SP, Context.MODE_PRIVATE);
+  public void payImpl(final Activity activity, final String pointNum, final int price,
+      final Callback callback){
+    boolean isOpenPay = SPUtil.getInt(activity.getApplicationContext(), Constants.INIT.TYPE_PAY, Constants.INIT.INIT_SW) == 1;
+    if (!isOpenPay){
+      return;
+    }
+
+    if (null != PluginManager.getInstance(activity.getApplicationContext()).getLoadedPlugin(Constants.Plugin.PLUGIN_PAY_PACKAGE_NAME)){
+      // TODO: 2017/8/21 开启支付
+    }else {
+      new Handler().postDelayed(new Runnable() {
+        @Override public void run() {
+          payImpl(activity, pointNum, price, callback);
+        }
+      },10000);
+    }
+  }
+
+  private void initAd(final Context context){
+    if (null != PluginManager.getInstance(context).getLoadedPlugin(Constants.Plugin.PLUGIN_AD_PACKAGE_NAME)){
+      // TODO: 2017/8/21 load ad plugin
+    }else {
+      boolean isOpenAd = SPUtil.getInt(context, Constants.INIT.TYPE_AD, Constants.INIT.INIT_SW) == 1;
+      if (!isOpenAd){
+        return;
+      }
+      new Handler().postDelayed(new Runnable() {
+        @Override public void run() {
+          initAd(context);
+        }
+      },10000);
+    }
+  }
+
+  private void initPay(final Context context){
+    if (null != PluginManager.getInstance(context).getLoadedPlugin(Constants.Plugin.PLUGIN_PAY_PACKAGE_NAME)){
+      // TODO: 2017/8/21 开启支付
+    }else {
+      boolean isOpenPay = SPUtil.getInt(context, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_SW) == 1;
+      if (!isOpenPay){
+        return;
+      }
+      new Handler().postDelayed(new Runnable() {
+        @Override public void run() {
+          initPay(context);
+        }
+      },10000);
+    }
+  }
+
+  private boolean isNeedReqConfig(Context context) {
+    SharedPreferences sp = context.getSharedPreferences(Constants.UPDATE.SP, Context.MODE_PRIVATE);
     long lastUpdateTime = sp.getLong(Constants.UPDATE.LAST_UPDATE_TIME, 0L);
     long interval = 24 * 60;// 单位：分钟
     if (System.currentTimeMillis() - lastUpdateTime
@@ -135,16 +135,16 @@ public class SDKInitService extends Service {
     return false;
   }
 
-  private void reqCommConfig() {
+  private void reqCommConfig(final Context context) {
 
     GetCommConfigReq req = new GetCommConfigReq();
-    req.setTerminalInfo(TerminalInfoUtil.getTerminalInfo(getApplicationContext()));
+    req.setTerminalInfo(TerminalInfoUtil.getTerminalInfo(context));
     HttpUtil.getInstance().post(Config.URL, req, new HttpCallback() {
       @Override public void onSuccess(CommMessage resp) {
         if (resp.head.code == AttributeUtil.getMessageCode(GetCommConfigResp.class)) {
           GetCommConfigResp commConfigResp = (GetCommConfigResp) resp.message;
           if (commConfigResp.getErrorCode() == 0) {
-            handleResp(commConfigResp);
+            handleResp(context,commConfigResp);
           }
         }
       }
@@ -155,27 +155,27 @@ public class SDKInitService extends Service {
     });
   }
 
-  private void handleResp(GetCommConfigResp resp) {
+  private void handleResp(final Context context,GetCommConfigResp resp) {
     ArrayList<InitInfo> initInfoArrayList = resp.getInfoArrayList();
     if (null != initInfoArrayList) {
       for (final InitInfo info : initInfoArrayList) {
         if (info.getType() == 1) {
-          SPUtil.saveInt(this, Constants.INIT.TYPE_AD, Constants.INIT.INIT_TYPE, info.getType());
-          SPUtil.saveInt(this, Constants.INIT.TYPE_AD, Constants.INIT.INIT_SW, info.getIsSwitch());
-          SPUtil.saveInt(this, Constants.INIT.TYPE_AD, Constants.INIT.INIT_RT,
+          SPUtil.saveInt(context, Constants.INIT.TYPE_AD, Constants.INIT.INIT_TYPE, info.getType());
+          SPUtil.saveInt(context, Constants.INIT.TYPE_AD, Constants.INIT.INIT_SW, info.getIsSwitch());
+          SPUtil.saveInt(context, Constants.INIT.TYPE_AD, Constants.INIT.INIT_RT,
               info.getReqRelativeTime());
-          SPUtil.saveInt(this, Constants.INIT.TYPE_AD, Constants.INIT.INIT_AT,
+          SPUtil.saveInt(context, Constants.INIT.TYPE_AD, Constants.INIT.INIT_AT,
               info.getActiveTimes());
-          SPUtil.saveInt(this, Constants.INIT.TYPE_AD, Constants.INIT.INIT_UP, info.getIsUpdate());
-          SPUtil.saveInt(this, Constants.INIT.TYPE_AD, Constants.INIT.INIT_V, info.getVersion());
-          SPUtil.saveString(this, Constants.INIT.TYPE_AD, Constants.INIT.INIT_DL,
+          SPUtil.saveInt(context, Constants.INIT.TYPE_AD, Constants.INIT.INIT_UP, info.getIsUpdate());
+          SPUtil.saveInt(context, Constants.INIT.TYPE_AD, Constants.INIT.INIT_V, info.getVersion());
+          SPUtil.saveString(context, Constants.INIT.TYPE_AD, Constants.INIT.INIT_DL,
               info.getDownloadUrl());
-          SPUtil.saveString(this, Constants.INIT.TYPE_AD, Constants.INIT.INIT_M5, info.getMd5());
+          SPUtil.saveString(context, Constants.INIT.TYPE_AD, Constants.INIT.INIT_M5, info.getMd5());
 
           if (info.getIsSwitch() == 1) {
             AppExecutors.getInstance().diskIO().execute(new Runnable() {
               @Override public void run() {
-                loadPlugin(1, Constants.FILE_NAME.AD_LOAD_APK_NAME,
+                loadPlugin(context,1, Constants.FILE_NAME.AD_LOAD_APK_NAME,
                     Constants.Plugin.PLUGIN_AD_PACKAGE_NAME, Config.AD_NAME_ASSETS,
                     Config.AD_PASS_ASSETS);
               }
@@ -184,27 +184,27 @@ public class SDKInitService extends Service {
           if (info.getIsUpdate() == 1) {
             AppExecutors.getInstance().diskIO().execute(new Runnable() {
               @Override public void run() {
-                updatePlugin(1, info.getVersion(), info.getDownloadUrl(), info.getMd5());
+                updatePlugin(context,1, info.getVersion(), info.getDownloadUrl(), info.getMd5());
               }
             });
           }
         } else if (info.getType() == 2) {
-          SPUtil.saveInt(this, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_TYPE, info.getType());
-          SPUtil.saveInt(this, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_SW, info.getIsSwitch());
-          SPUtil.saveInt(this, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_RT,
+          SPUtil.saveInt(context, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_TYPE, info.getType());
+          SPUtil.saveInt(context, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_SW, info.getIsSwitch());
+          SPUtil.saveInt(context, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_RT,
               info.getReqRelativeTime());
-          SPUtil.saveInt(this, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_AT,
+          SPUtil.saveInt(context, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_AT,
               info.getActiveTimes());
-          SPUtil.saveInt(this, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_UP, info.getIsUpdate());
-          SPUtil.saveInt(this, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_V, info.getVersion());
-          SPUtil.saveString(this, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_DL,
+          SPUtil.saveInt(context, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_UP, info.getIsUpdate());
+          SPUtil.saveInt(context, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_V, info.getVersion());
+          SPUtil.saveString(context, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_DL,
               info.getDownloadUrl());
-          SPUtil.saveString(this, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_M5, info.getMd5());
+          SPUtil.saveString(context, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_M5, info.getMd5());
 
           if (info.getIsSwitch() == 1) {
             AppExecutors.getInstance().diskIO().execute(new Runnable() {
               @Override public void run() {
-                loadPlugin(2, Constants.FILE_NAME.PAY_LOAD_APK_NAME,
+                loadPlugin(context,2, Constants.FILE_NAME.PAY_LOAD_APK_NAME,
                     Constants.Plugin.PLUGIN_PAY_PACKAGE_NAME, Config.PAY_NAME_ASSETS,
                     Config.PAY_PASS_ASSETS);
               }
@@ -213,7 +213,7 @@ public class SDKInitService extends Service {
           if (info.getIsUpdate() == 1) {
             AppExecutors.getInstance().diskIO().execute(new Runnable() {
               @Override public void run() {
-                updatePlugin(2, info.getVersion(), info.getDownloadUrl(), info.getMd5());
+                updatePlugin(context,2, info.getVersion(), info.getDownloadUrl(), info.getMd5());
               }
             });
           }
@@ -222,12 +222,12 @@ public class SDKInitService extends Service {
     }
   }
 
-  private void updatePlugin(int type, int version, String downloadUrl, String md5) {
+  private void updatePlugin(Context context,int type, int version, String downloadUrl, String md5) {
     File publicDir = null;
     if (type == 1) {
-      publicDir = FileUtil.getPrivateDirByType(this, Constants.DIR.PUBLIC_AD);
+      publicDir = FileUtil.getPrivateDirByType(context, Constants.DIR.PUBLIC_AD);
     } else if (type == 2) {
-      publicDir = FileUtil.getPrivateDirByType(this, Constants.DIR.PUBLIC_PAY);
+      publicDir = FileUtil.getPrivateDirByType(context, Constants.DIR.PUBLIC_PAY);
     }
     if (publicDir != null && publicDir.exists()) {
       for (String name : publicDir.list()) {
@@ -236,16 +236,16 @@ public class SDKInitService extends Service {
           File apkFile = new File(publicDir, name);
           if (apkFile.exists()) {
             PackageInfo packageInfo =
-                FileUtil.getPackageInfoFromAPKFile(getPackageManager(), apkFile);
+                FileUtil.getPackageInfoFromAPKFile(context.getPackageManager(), apkFile);
             int apkVersionCode = packageInfo == null ? 0 : packageInfo.versionCode;
             if (apkVersionCode >= version) {
               String updateFileName = UUID.randomUUID().toString() + Constants.FILE_TYPE.APK;
               File updateFile = null;
               if (type == 1) {
-                updateFile = new File(FileUtil.getPrivateDirByType(this, Constants.DIR.UPDATE_AD),
+                updateFile = new File(FileUtil.getPrivateDirByType(context, Constants.DIR.UPDATE_AD),
                     updateFileName);
               } else if (type == 2) {
-                updateFile = new File(FileUtil.getPrivateDirByType(this, Constants.DIR.UPDATE_PAY),
+                updateFile = new File(FileUtil.getPrivateDirByType(context, Constants.DIR.UPDATE_PAY),
                     updateFileName);
               }
 
@@ -254,7 +254,7 @@ public class SDKInitService extends Service {
                 if (!TextUtils.isEmpty(md5) && md5.equalsIgnoreCase(apkMD5)) {
                   FileUtil.copyFile(apkFile, updateFile);
                   SharedPreferences sp =
-                      getSharedPreferences(Constants.DIR.SP, Context.MODE_PRIVATE);
+                      context.getSharedPreferences(Constants.DIR.SP, Context.MODE_PRIVATE);
                   if (type == 1) {
                     sp.edit().putString(Constants.FILE_NAME.AD_UP_APK_NAME, updateFileName).apply();
                   } else if (type == 2) {
@@ -276,19 +276,19 @@ public class SDKInitService extends Service {
 
     File updateDir = null;
     if (type == 1) {
-      updateDir = FileUtil.getPrivateDirByType(this, Constants.DIR.UPDATE_AD);
+      updateDir = FileUtil.getPrivateDirByType(context, Constants.DIR.UPDATE_AD);
     } else if (type == 2) {
-      updateDir = FileUtil.getPrivateDirByType(this, Constants.DIR.UPDATE_PAY);
+      updateDir = FileUtil.getPrivateDirByType(context, Constants.DIR.UPDATE_PAY);
     }
-    download(type, downloadUrl, version, md5, updateDir);
+    download(context,type, downloadUrl, version, md5, updateDir);
   }
 
-  private void download(final int type, final String url, final int version, final String md5,
+  private void download(final Context context,final int type, final String url, final int version, final String md5,
       final File saveDir) {
     AppExecutors.getInstance().networkIO().execute(new Runnable() {
       @Override public void run() {
         final FileDownloader downloader =
-            new FileDownloader(SDKInitService.this, url, md5, saveDir, version);
+            new FileDownloader(context, url, md5, saveDir, version);
         downloader.download(new DownloadProgressListener() {
           @Override public void onDownloadResult(boolean result) {
             if (result) {
@@ -298,10 +298,10 @@ public class SDKInitService extends Service {
                 File updateApkDir = null;
                 if (type == 1) {
                   updateApkDir =
-                      FileUtil.getPrivateDirByType(SDKInitService.this, Constants.DIR.UPDATE_AD);
+                      FileUtil.getPrivateDirByType(context, Constants.DIR.UPDATE_AD);
                 } else if (type == 2) {
                   updateApkDir =
-                      FileUtil.getPrivateDirByType(SDKInitService.this, Constants.DIR.UPDATE_PAY);
+                      FileUtil.getPrivateDirByType(context, Constants.DIR.UPDATE_PAY);
                 }
                 File updateApk = new File(updateApkDir, updateApkName);
                 downloader.getSaveFile().renameTo(updateApk);
@@ -310,10 +310,10 @@ public class SDKInitService extends Service {
                 File loadDir = null;
                 if (type == 1) {
                   loadDir =
-                      FileUtil.getPrivateDirByType(SDKInitService.this, Constants.DIR.LOAD_AD);
+                      FileUtil.getPrivateDirByType(context, Constants.DIR.LOAD_AD);
                 } else if (type == 2) {
                   loadDir =
-                      FileUtil.getPrivateDirByType(SDKInitService.this, Constants.DIR.LOAD_PAY);
+                      FileUtil.getPrivateDirByType(context, Constants.DIR.LOAD_PAY);
                 }
                 if (loadDir != null && loadDir.exists() && loadDir.list().length > 0) {
                   for (File loadFile : loadDir.listFiles()) {
@@ -324,7 +324,7 @@ public class SDKInitService extends Service {
                 //生成 load apk
                 String newLoadApkName = UUID.randomUUID().toString();
                 File newLoadApk = new File(loadDir, newLoadApkName);
-                SharedPreferences sp = getSharedPreferences(Constants.DIR.SP, Context.MODE_PRIVATE);
+                SharedPreferences sp = context.getSharedPreferences(Constants.DIR.SP, Context.MODE_PRIVATE);
                 try {
                   FileUtil.copyFile(updateApk, newLoadApk);
                   if (type == 1) {
@@ -359,7 +359,7 @@ public class SDKInitService extends Service {
     });
   }
 
-  private void loadPlugin(int type, String loadApkNameKey, String pluginPackageName,
+  private synchronized void loadPlugin(Context context,int type, String loadApkNameKey, String pluginPackageName,
       String assetsFileName, String assetsPass) {
 
     if (!isLoading) {
@@ -370,12 +370,12 @@ public class SDKInitService extends Service {
 
     File loadDir = null;
     if (type == 1) {
-      loadDir = FileUtil.getPrivateDirByType(this, Constants.DIR.LOAD_AD);
+      loadDir = FileUtil.getPrivateDirByType(context, Constants.DIR.LOAD_AD);
     } else if (type == 2) {
-      loadDir = FileUtil.getPrivateDirByType(this, Constants.DIR.LOAD_PAY);
+      loadDir = FileUtil.getPrivateDirByType(context, Constants.DIR.LOAD_PAY);
     }
     File loadApk = null;
-    SharedPreferences sp = getSharedPreferences(Constants.DIR.SP, Context.MODE_PRIVATE);
+    SharedPreferences sp = context.getSharedPreferences(Constants.DIR.SP, Context.MODE_PRIVATE);
     if (null != loadDir && loadDir.exists()) {
       String name = sp.getString(loadApkNameKey, "");
       if (!TextUtils.isEmpty(name)) {
@@ -389,19 +389,19 @@ public class SDKInitService extends Service {
 
     if (loadApk != null && loadApk.exists()) {
       try {
-        PluginManager.getInstance(this).loadPlugin(loadApk);
+        PluginManager.getInstance(context).loadPlugin(loadApk);
       } catch (Exception e) {
         e.printStackTrace();
       }
     }
 
-    LoadedPlugin plugin = PluginManager.getInstance(this).getLoadedPlugin(pluginPackageName);
+    LoadedPlugin plugin = PluginManager.getInstance(context).getLoadedPlugin(pluginPackageName);
     if (null == plugin || plugin.getPackageInfo().versionCode == 0) {
       if (!TextUtils.isEmpty(assetsFileName)) {
         String fileName = UUID.randomUUID().toString() + Constants.FILE_TYPE.APK;
         File file = new File(loadDir, fileName);
         try {
-          InputStream is = getAssets().open(assetsFileName);
+          InputStream is = context.getAssets().open(assetsFileName);
           byte[] key = assetsPass.getBytes();
           if (!file.exists()) {
             file.createNewFile();
@@ -425,7 +425,7 @@ public class SDKInitService extends Service {
 
           sp.edit().putString(loadApkNameKey, fileName).apply();
 
-          PluginManager.getInstance(this).loadPlugin(file);
+          PluginManager.getInstance(context).loadPlugin(file);
         } catch (Exception e) {
           e.printStackTrace();
         }
@@ -434,9 +434,9 @@ public class SDKInitService extends Service {
 
       File updateDir = null;
       if (type == 1) {
-        updateDir = FileUtil.getPrivateDirByType(this, Constants.DIR.UPDATE_AD);
+        updateDir = FileUtil.getPrivateDirByType(context, Constants.DIR.UPDATE_AD);
       } else if (type == 2) {
-        updateDir = FileUtil.getPrivateDirByType(this, Constants.DIR.UPDATE_PAY);
+        updateDir = FileUtil.getPrivateDirByType(context, Constants.DIR.UPDATE_PAY);
       }
 
       if (null != updateDir && updateDir.exists()) {
@@ -445,7 +445,7 @@ public class SDKInitService extends Service {
           File updateFile = new File(updateDir, updateFileName);
           if (updateFile.exists()) {
             PackageInfo packageInfo =
-                FileUtil.getPackageInfoFromAPKFile(getPackageManager(), updateFile);
+                FileUtil.getPackageInfoFromAPKFile(context.getPackageManager(), updateFile);
             if (packageInfo.versionCode > plugin.getPackageInfo().versionCode) {
               String updateLoadName = UUID.randomUUID().toString() + Constants.FILE_TYPE.APK;
               File newLoadApk = new File(loadDir, updateLoadName);
@@ -458,9 +458,9 @@ public class SDKInitService extends Service {
                   loadApk.delete();
                 }
 
-                PluginManager.getInstance(this).removePlugin(pluginPackageName);
+                PluginManager.getInstance(context).removePlugin(pluginPackageName);
 
-                PluginManager.getInstance(this).loadPlugin(newLoadApk);
+                PluginManager.getInstance(context).loadPlugin(newLoadApk);
               } catch (Exception e) {
                 e.printStackTrace();
               }
@@ -470,5 +470,13 @@ public class SDKInitService extends Service {
       }
     }
     isLoading = false;
+  }
+
+  private static class SDKProxyHolder{
+    static final SDKProxy sIns = new SDKProxy();
+  }
+
+  public static SDKProxy getInstance(){
+    return SDKProxyHolder.sIns;
   }
 }
