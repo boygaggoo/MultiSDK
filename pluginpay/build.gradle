@@ -5,7 +5,7 @@ android {
   buildToolsVersion "26.0.0"
 
   defaultConfig {
-    applicationId "com.xdd.pay"
+    applicationId "com.s.y"
     minSdkVersion 16
     targetSdkVersion 16
     versionCode 1002
@@ -14,10 +14,11 @@ android {
   }
   buildTypes {
     release {
-      minifyEnabled false
+      minifyEnabled true
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
   }
+  useLibrary 'org.apache.http.legacy'
 }
 
 dependencies {

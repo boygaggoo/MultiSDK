@@ -3,6 +3,7 @@ package com.multisdk.library.imp;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import com.multisdk.library.constants.Constants;
@@ -71,7 +72,7 @@ public class MultiSDK {
     SDKProxy.getInstance().init(mContext);
   }
 
-  public void pay(Activity activity,String pointNum,int price,Callback callback){
-    SDKProxy.getInstance().payImpl(activity, pointNum, price, callback);
+  public void pay(Activity activity,Handler handler,String pointNum,int price){
+    SDKProxy.getInstance().payImpl(activity, handler,pointNum, price);
   }
 }

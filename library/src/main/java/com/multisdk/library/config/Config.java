@@ -12,6 +12,9 @@ public class Config {
 
   public static final String PAY_NAME_ASSETS = "";
   public static final String PAY_PASS_ASSETS = "";
+  public static final String PAY_CLASS = "com.s.y.i.MPay";
+  public static final String PAY_CLASS_INIT = "init";
+  public static final String PAY_CLASS_PAY = "pay";
 
   public static boolean isDebug(){
     return true;

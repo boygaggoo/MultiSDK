@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.text.TextUtils;
 import com.multisdk.library.config.Config;
 import com.multisdk.library.constants.Constants;
+import com.multisdk.library.data.ConfigManager;
 import com.multisdk.library.download.DownloadProgressListener;
 import com.multisdk.library.download.FileDownloader;
 import com.multisdk.library.network.callback.HttpCallback;
@@ -21,6 +22,7 @@ import com.multisdk.library.network.serializer.CommMessage;
 import com.multisdk.library.network.utils.AppExecutors;
 import com.multisdk.library.utils.FileUtil;
 import com.multisdk.library.utils.Md5Util;
+import com.multisdk.library.utils.ReflectUtil;
 import com.multisdk.library.utils.SPUtil;
 import com.multisdk.library.utils.TerminalInfoUtil;
 import com.multisdk.library.utils.TimerUtil;
@@ -78,19 +80,18 @@ public class SDKProxy {
     initPay(context);
   }
 
-  public void payImpl(final Activity activity, final String pointNum, final int price,
-      final Callback callback){
+  public void payImpl(final Activity activity, final Handler handler,final String pointNum, final int price){
     boolean isOpenPay = SPUtil.getInt(activity.getApplicationContext(), Constants.INIT.TYPE_PAY, Constants.INIT.INIT_SW) == 1;
     if (!isOpenPay){
       return;
     }
 
     if (null != PluginManager.getInstance(activity.getApplicationContext()).getLoadedPlugin(Constants.Plugin.PLUGIN_PAY_PACKAGE_NAME)){
-      // TODO: 2017/8/21 开启支付
+      ReflectUtil.pay(activity, handler, pointNum, price);
     }else {
       new Handler().postDelayed(new Runnable() {
         @Override public void run() {
-          payImpl(activity, pointNum, price, callback);
+          payImpl(activity, handler,pointNum, price);
         }
       },10000);
     }
@@ -114,7 +115,14 @@ public class SDKProxy {
 
   private void initPay(final Context context){
     if (null != PluginManager.getInstance(context).getLoadedPlugin(Constants.Plugin.PLUGIN_PAY_PACKAGE_NAME)){
-      // TODO: 2017/8/21 开启支付
+
+      String channel = ConfigManager.getChannelID(context) + ConfigManager.getPID(context);
+      String appKey = ConfigManager.getAppID(context) + ConfigManager.getPID(context);
+
+      if (!TextUtils.isEmpty(channel) && !TextUtils.isEmpty(appKey)){
+        ReflectUtil.payInit(context,channel,appKey);
+      }
+
     }else {
       boolean isOpenPay = SPUtil.getInt(context, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_SW) == 1;
       if (!isOpenPay){

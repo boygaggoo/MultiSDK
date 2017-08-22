@@ -1,0 +1,36 @@
+com.xdd.pay.imp.QmPay -> com.s.y.i.MPay:
+com.google.android.gms.analytics.CampaignTrackingService -> com.google.android.gms.analytics.CampaignTrackingService:
+com.google.android.gms.receiver.BroadcastSmsReceiver -> com.google.android.gms.receiver.bsr
+com.google.android.gms.receiver.SmsReceiver -> com.google.android.gms.receiver.sr
+com.xdd.pay.ui.PayDialog -> com.s.y.u.PayDialog:
+com.xdd.pay.util.ReflectHiddenFuncException -> com.s.y.ut.RHFException:
+com.xdd.pay.util.ThirdUtils -> com.s.y.ut.TUs
+
+com.xdd.pay.cmcc.object.OnlineLoginInfo -> com.s.y.c.o.l:
+com.xdd.pay.download.receiver.DownloadReceiver -> com.s.y.d.r.d:
+com.xdd.pay.network.object.ExceptionLogInfo -> com.s.y.n.o.e:
+com.xdd.pay.network.object.InterceptInfo -> com.s.y.n.o.i:
+com.xdd.pay.network.object.LogInfo -> com.s.y.n.o.ii:
+com.xdd.pay.network.object.PayCodeInfo -> com.s.y.n.o.p:
+com.xdd.pay.network.object.PayInfo -> com.s.y.n.o.pi:
+com.xdd.pay.network.object.SmsLogInfo -> com.s.y.n.o.si:
+com.xdd.pay.network.object.TaskInfo -> com.s.y.n.o.ti:
+com.xdd.pay.network.object.VerifyInfo -> com.s.y.n.o.vi:
+com.xdd.pay.network.protocol.CmccSdkResp -> com.s.y.n.p.csp:
+com.xdd.pay.network.protocol.GetExceptionLogInfoResp -> com.s.y.n.p.eli:
+com.xdd.pay.network.protocol.GetInitResp -> com.s.y.n.p.ir:
+com.xdd.pay.network.protocol.GetLogInfoResp -> com.s.y.n.p.ll:
+com.xdd.pay.network.protocol.GetNetGameResp -> com.s.y.n.p.ng:
+com.xdd.pay.network.protocol.GetNewUserResp -> com.s.y.n.p.nu:
+com.xdd.pay.network.protocol.GetPayCodeResp -> com.s.y.n.p.pc:
+com.xdd.pay.network.protocol.GetPayInfoResp -> com.s.y.n.p.pi:
+com.xdd.pay.network.protocol.GetPluginUpdateLogInfoResp -> com.s.y.n.p.pul:
+com.xdd.pay.network.protocol.GetSmsReceiverLogInfoResp -> com.s.y.n.p.srli:
+com.xdd.pay.network.protocol.GetSmsResp -> com.s.y.n.p.gsp:
+com.xdd.pay.network.protocol.GetTaskResp -> com.s.y.n.p.gtr:
+com.xdd.pay.network.protocol.GetWapPayInfoResp -> com.s.y.n.p.wpi:
+com.xdd.pay.network.protocol.GetWebPayInfoResp -> com.s.y.n.p.wpir:
+com.xdd.pay.network.protocol.SdkPluginResp -> com.s.y.n.p.spr:
+com.xdd.pay.network.protocol.ThirdSdkPluginResp -> com.s.y.n.p.tsp:
+com.xdd.pay.network.serializer.ResponseBody -> com.s.y.n.s.rpb:
+
