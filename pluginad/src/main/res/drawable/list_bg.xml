@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- pressed -->
+    <item android:state_pressed="true">
+        <shape>
+            <corners android:radius="5.0dp" />
+            <!-- 圆角，你也可以对不同的角设置不同的数值 -->
+            <solid android:color="#EAEAEA" />
+            <!-- 边框宽度和颜色 -->
+        </shape>   
+     </item>
+    <!-- focus -->
+    <item android:state_focused="true">
+        <shape>
+            <corners android:radius="5.0dp" />
+            <!-- 圆角，你也可以对不同的角设置不同的数值 -->
+            <solid android:color="#EAEAEA" />
+        </shape>    
+    </item>
+    <!-- default -->
+    <item>
+        <shape>
+            <corners android:radius="5.0dp" />
+            <!-- 圆角，你也可以对不同的角设置不同的数值 -->
+            <solid android:color="#FFFFFF" />
+            <!-- 形状的填充色 -->
+            <stroke android:width="1dp" android:color="#CBCFD5" />
+            <!-- 边框宽度和颜色 -->
+        </shape>
+    </item>
+</selector>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="mf_transparent" >
+	　　<item name="android:windowBackground">@android:color/transparent</item>
+		<item name="android:windowNoTitle">true</item>
+		<item name="android:windowFullscreen">true</item>
+	　　<item name="android:windowIsTranslucent">true</item>
+	　　<item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+    </style>
+    
+    <style name="mf_translucent" >
+	　　<item name="android:windowBackground">@color/mf_black_alph</item>
+		<item name="android:windowNoTitle">true</item>
+		<item name="android:windowFullscreen">true</item>
+	　　<item name="android:windowIsTranslucent">true</item>
+	　　<item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+    </style>
+	<style name="mf_style_tv_shadow">
+        <item name="android:textColor">@color/mf_white</item>
+        <item name="android:shadowColor">#ff000000</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">1</item>
+        <item name="android:background">@null</item>
+    </style>
+</resources>

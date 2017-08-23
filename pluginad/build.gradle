@@ -1,0 +1,25 @@
+apply plugin: 'com.android.application'
+
+android {
+  compileSdkVersion 25
+  buildToolsVersion "26.0.0"
+
+  defaultConfig {
+    applicationId "com.mf"
+    minSdkVersion 16
+    targetSdkVersion 16
+    versionCode 234
+    versionName "2.3.4"
+
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+}
+
+dependencies {
+  compile fileTree(dir: 'libs', include: ['*.jar'])
+}

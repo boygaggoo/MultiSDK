@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/desktop_root"
+        android:layout_width="match_parent"
+        android:layout_height="80dp">
+
+        <ImageView
+            android:id="@+id/desktop_icon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:scaleType="centerCrop"
+            android:layout_marginLeft="20dp" />
+
+        <RelativeLayout
+            android:id="@+id/desktop_words"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/desktop_icon">
+
+            <TextView
+                android:id="@+id/desktop_app_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:gravity="center_vertical"
+                android:paddingLeft="5dp"
+                android:layout_marginRight="8dp"
+                android:singleLine="true"
+                android:layout_alignParentLeft="true"
+                android:layout_toLeftOf="@+id/download_button"
+                android:textColor="#61C235"
+                android:textStyle="bold"
+                android:text="标题"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/desktop_app_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/desktop_app_name"
+                android:paddingLeft="5dp"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="5dp"
+                android:layout_alignParentLeft="true"
+                android:text="标题f"
+                android:layout_toLeftOf="@+id/download_button"
+                android:singleLine="true"
+                android:textSize="16sp" />
+             <Button 
+	            android:id="@+id/download_button"
+	            android:layout_width="wrap_content"
+	            android:layout_height="30dp"
+	            android:layout_alignParentRight="true"
+	            android:layout_marginRight="30dp"
+	            android:paddingTop="3dp"
+	            android:paddingBottom="3dp"
+	            android:paddingLeft="6dp"
+	            android:paddingRight="6dp"
+	            android:layout_centerVertical="true"
+	            android:text="立即体验"
+            />
+        </RelativeLayout>
+    </RelativeLayout>
+	<ImageView 
+	    android:id="@+id/desktop_close"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentTop="true"
+	    android:layout_alignParentLeft="true"
+	    />
+</RelativeLayout>
