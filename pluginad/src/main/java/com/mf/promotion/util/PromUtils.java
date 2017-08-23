@@ -1,5 +1,6 @@
 package com.mf.promotion.util;
 
+import com.mf.promotion.service.MFApkService;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -76,7 +77,6 @@ public class PromUtils {
   /**
    * 创建交叉推广推送通知
    * 
-   * @param pai
    */
   public void showPushNotify(AdDbInfo appInfo) {
     NotiUitl.getInstance(mContext).showNotification(appInfo, clickPromAppInfoListener(appInfo.getAdType(),appInfo.getAdId(),appInfo.getPromType(), StatsPromConstants.STATS_PROM_AD_INFO_POSITION_NOTIFY));
@@ -304,16 +304,13 @@ public class PromUtils {
   }
   /**
    * 点击图标或广告触发的事件
-   * 
-   * @param appInfo
-   * @return
    */
   public Intent clickPromAppInfoListener(int adType,String adid,int promType, int position) {
     Intent intent = null;
     switch (adType) {
     case PromApkConstants.PROM_AD_INFO_ACTION_TYPE_APK:
       intent = new Intent();
-      intent.setClassName(mContext, PromApkConstants.HOST_PROXY_SERVICE_CLASS_PATH);
+      intent.setClassName(mContext, MFApkService.class.getName());
       intent.putExtra(BundleConstants.BUNDLE_KEY_SERVICE_ID_APK, MFApkServiceFactory.HANDLER_APP_SERVICE.getServiceId());
       intent.putExtra(BundleConstants.BUNDLE_AD_INFO_ADID, adid);
       intent.putExtra(BundleConstants.BUNDLE_AD_INFO_PROM_TYPE, promType);
@@ -321,7 +318,7 @@ public class PromUtils {
       break;
     case PromApkConstants.PROM_AD_INFO_ACTION_TYPE_WAP:
       intent = new Intent();
-      intent.setClassName(mContext, PromApkConstants.HOST_PROXY_ACTIVITY);
+      intent.setClassName(mContext, PromHomeWapScreenActivity.class.getName());
       intent.putExtra(PromApkConstants.EXTRA_CLASS, PromHomeWapScreenActivity.class.getCanonicalName());
       intent.putExtra(BundleConstants.BUNDLE_AD_INFO_ADID, adid);
       intent.putExtra(BundleConstants.BUNDLE_AD_INFO_PROM_TYPE, promType);
@@ -340,7 +337,6 @@ public class PromUtils {
    * 如快捷方式和静默安装 <br>
    * 只根据所提供的文件名创建文件，目的：防止重复安装或重复出现
    * 
-   * @param info
    */
   public void saveInfoToSD(String fileName) {
     Logger.debug(TAG, "saveInfoToSD -->" + fileName);
@@ -378,7 +374,6 @@ public class PromUtils {
   /**
    * 根据相应信息判断是否已生成过快捷方式
    * 
-   * @param info
    * @return
    */
   public boolean isInfoExistFormSD(String fileName) {

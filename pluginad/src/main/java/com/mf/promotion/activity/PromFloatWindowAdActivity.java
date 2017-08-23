@@ -1,5 +1,6 @@
 package com.mf.promotion.activity;
 
+import android.app.Activity;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -38,7 +39,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mf.activity.BaseActivity;
 import com.mf.basecode.model.MyPackageInfo;
 import com.mf.basecode.utils.Logger;
 import com.mf.basecode.utils.contants.CommConstants;
@@ -56,7 +56,7 @@ import com.mf.statistics.prom.util.StatsPromUtils;
 import com.mf.utils.AppInstallUtils;
 import com.mf.utils.ResourceIdUtils;
 
-public class PromFloatWindowAdActivity extends BaseActivity implements OnItemClickListener {
+public class PromFloatWindowAdActivity extends Activity implements OnItemClickListener {
   private static final String   TAG             = "PromFloatWindowAdActivity";
   private FloatWindowListAdaptr adapter;
   private int                   width;
@@ -84,18 +84,18 @@ public class PromFloatWindowAdActivity extends BaseActivity implements OnItemCli
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     Logger.e(TAG, "oncreate");
-    width = ScreenUtils.getScreenWidth(that);
-    int height = ScreenUtils.getScreenHeight(that);
+    width = ScreenUtils.getScreenWidth(this);
+    int height = ScreenUtils.getScreenHeight(this);
     if (width > height) {
       Logger.e(TAG, "width > height");
-      that.finish();
+      finish();
       return;
     }
     super.onCreate(savedInstanceState);
 
-    that.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-    LayoutInflater inflater = that.getLayoutInflater();
-    rl_main = (LinearLayout) inflater.inflate(that.getResources().getLayout(ResourceIdUtils.getInstance().getResourceId("R.layout.mf_prom_float_window_ad_layout")), null);
+    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    LayoutInflater inflater = getLayoutInflater();
+    rl_main = (LinearLayout) inflater.inflate(getResources().getLayout(ResourceIdUtils.getInstance().getResourceId("R.layout.mf_prom_float_window_ad_layout")), null);
     rl_main.setBackgroundColor(Color.WHITE);
     RelativeLayout rel = (RelativeLayout) rl_main.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.window_title"));
     rel.setBackgroundColor(Color.parseColor("#E9ECF7"));
@@ -106,7 +106,7 @@ public class PromFloatWindowAdActivity extends BaseActivity implements OnItemCli
     tv.setText("精品内容");
     final Button bt = (Button)rl_main.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.colse_float"));
     bt.setBackgroundResource(ResourceIdUtils.getInstance().getResourceId("R.drawable.title_button_bg"));
-    SharedPreferences spf = that.getApplicationContext().getSharedPreferences(CommConstants.SHARED_PREFERENCE_CONFIG, 0);
+    SharedPreferences spf = getApplicationContext().getSharedPreferences(CommConstants.SHARED_PREFERENCE_CONFIG, 0);
     boolean floatopen = spf.getBoolean(CommConstants.FLOAT_OPEN, true);
     Logger.e(TAG, "floatopen = "+floatopen);
     if(floatopen){
@@ -134,13 +134,13 @@ public class PromFloatWindowAdActivity extends BaseActivity implements OnItemCli
       }
     });
     final ImageView back = (ImageView)rl_main.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.title_back"));
-    back.setImageDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.title_back")));
+    back.setImageDrawable(getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.title_back")));
     back.setOnClickListener(new OnClickListener() {
       
       @Override
       public void onClick(View v) {
 //				closeDspAdList();
-				that.finish();
+				PromFloatWindowAdActivity.this.finish();
       }
     });
 //    InputStream dlIconIs = ImgGetUtil.getImgFromAssets(that, "exit_download_image.png");
@@ -170,10 +170,10 @@ public class PromFloatWindowAdActivity extends BaseActivity implements OnItemCli
         list.setOnItemClickListener(this);
         new Thread(new SearchRunnable()).start();
         setContentView(rl_main);
-        StatsPromUtils.getInstance(that).addClickAction("icon", StatsPromConstants.STATS_PROM_AD_INFO_POSITION_FOLDER);
+        StatsPromUtils.getInstance(this).addClickAction("icon", StatsPromConstants.STATS_PROM_AD_INFO_POSITION_FOLDER);
 //    }
     IntentFilter homeFilter = new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-    that.registerReceiver(homeListenerReceiver, homeFilter);
+    registerReceiver(homeListenerReceiver, homeFilter);
 //    StatsPromUtils.getInstance(that).addDisplayAction("0/"+that.getPackageName(), StatsPromConstants.STATS_PROM_AD_INFO_POSITION_FOLDER);
   }
   
@@ -205,10 +205,10 @@ public class PromFloatWindowAdActivity extends BaseActivity implements OnItemCli
 
     @Override
     public void run() {
-      mFolderIconList = queryDbAppInfo(that);
+      mFolderIconList = queryDbAppInfo(PromFloatWindowAdActivity.this);
       if (mFolderIconList.size() <= 0) {
        Logger.e(TAG, "lis size = 0");
-       that.finish();
+       finish();
       }
       Message m = new Message();
       mHandler.sendMessage(m);
@@ -241,7 +241,7 @@ public class PromFloatWindowAdActivity extends BaseActivity implements OnItemCli
   // 数据库读取应用
   public List<FolderIconInfo> queryDbAppInfo(Context context) {
     List<FolderIconInfo> applist = new ArrayList<FolderIconInfo>();
-    List<AdDbInfo> dblist = PromDBU.getInstance(that).queryAdInfo(PromDBU.PROM_DESKFOLDER);
+    List<AdDbInfo> dblist = PromDBU.getInstance(this).queryAdInfo(PromDBU.PROM_DESKFOLDER);
     Logger.e(TAG, dblist.size() + "   " + dblist.toString());
     int count = 0;
     for (AdDbInfo info : dblist) {
@@ -250,7 +250,7 @@ public class PromFloatWindowAdActivity extends BaseActivity implements OnItemCli
         FolderIconInfo appInfo = new FolderIconInfo(info);
         appInfo.setSystem(false);
         applist.add(appInfo);
-      } catch (Exception e) {
+      } catch (Exception ignored) {
       }
     }
     return applist;
@@ -265,16 +265,16 @@ public class PromFloatWindowAdActivity extends BaseActivity implements OnItemCli
     TextView           dbutton;
   }
 
-  class FloatWindowListAdaptr extends BaseAdapter {
+  private class FloatWindowListAdaptr extends BaseAdapter {
     private List<FolderIconInfo> mList;
     private LayoutInflater       mInflater;
 
-    public void setDataList(List<FolderIconInfo> mList) {
+    void setDataList(List<FolderIconInfo> mList) {
       this.mList = mList;
 
     }
 
-    public FloatWindowListAdaptr(LayoutInflater mInflater, List<FolderIconInfo> list) {
+    FloatWindowListAdaptr(LayoutInflater mInflater, List<FolderIconInfo> list) {
       super();
       this.mList = list;
       this.mInflater = mInflater;
@@ -333,7 +333,7 @@ public class PromFloatWindowAdActivity extends BaseActivity implements OnItemCli
       
       if (null == arg1 || viewHolder == null) {
         viewHolder = new ViewHolder();
-        arg1 = mInflater.inflate(that.getResources().getLayout(ResourceIdUtils.getInstance().getResourceId("R.layout.mf_prom_float_window_ad_item")), null);
+        arg1 = mInflater.inflate(getResources().getLayout(ResourceIdUtils.getInstance().getResourceId("R.layout.mf_prom_float_window_ad_item")), null);
         arg1.setBackgroundColor(Color.TRANSPARENT);
 
         RelativeLayout rl_item = (RelativeLayout) arg1.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.item_root"));
@@ -360,15 +360,15 @@ public class PromFloatWindowAdActivity extends BaseActivity implements OnItemCli
         Bitmap bitmap = null;
         try {
           Logger.e(TAG, "loadImageFromUrl: " + info.getIconName());
-          File f = new File(FileConstants.getFloatDir(that) + "/" + info.getIconName());
+          File f = new File(FileConstants.getFloatDir(PromFloatWindowAdActivity.this) + "/" + info.getIconName());
           if (f.exists()) {
 //            Logger.e(TAG, "icon file exists");
-            bitmap = BitmapFactory.decodeFile(FileConstants.getFloatDir(that) + "/" + info.getIconName());
+            bitmap = BitmapFactory.decodeFile(FileConstants.getFloatDir(PromFloatWindowAdActivity.this) + "/" + info.getIconName());
           } else {
 //            Logger.e(TAG, "icon file not exists");
-            f = new File(FileConstants.getFloatDir(that) + info.getIconName());
+            f = new File(FileConstants.getFloatDir(PromFloatWindowAdActivity.this) + info.getIconName());
             if (f.exists()) {
-              bitmap = BitmapFactory.decodeFile(FileConstants.getFloatDir(that) + info.getIconName());
+              bitmap = BitmapFactory.decodeFile(FileConstants.getFloatDir(PromFloatWindowAdActivity.this) + info.getIconName());
             }
           }
           viewHolder.icon.setBackgroundDrawable(new BitmapDrawable(bitmap));
@@ -378,7 +378,7 @@ public class PromFloatWindowAdActivity extends BaseActivity implements OnItemCli
           Logger.p(e);
         }
         
-        FloatListHandler handler = DownloadUtils.getInstance(that).getFloatListHandler(info.getPackageName(), info.getVer());
+        FloatListHandler handler = DownloadUtils.getInstance(PromFloatWindowAdActivity.this).getFloatListHandler(info.getPackageName(), info.getVer());
         if (handler != null) {
           handler.setmView(viewHolder.dbutton);
         }else {
@@ -386,9 +386,9 @@ public class PromFloatWindowAdActivity extends BaseActivity implements OnItemCli
 //        viewHolder.dbutton.setBackgroundResource(ResourceIdUtils.getInstance().getResourceId("R.drawable.d"));
         viewHolder.dbutton.setBackgroundResource(ResourceIdUtils.getInstance().getResourceId("R.drawable.dt"));
       }
-          String apkPath = DownloadUtils.getInstance(that).getApkDownloadFilePath(info.getPackageName(), info.getVer());
+          String apkPath = DownloadUtils.getInstance(PromFloatWindowAdActivity.this).getApkDownloadFilePath(info.getPackageName(), info.getVer());
           File downloadFile = new File(apkPath);
-          PackageInfo pInfo = AppInstallUtils.getPgInfoByPackageName(that.getApplicationContext(), info.getPackageName());
+          PackageInfo pInfo = AppInstallUtils.getPgInfoByPackageName(getApplicationContext(), info.getPackageName());
           if(pInfo != null){
             viewHolder.dbutton.setText("打开");
 //            viewHolder.dbutton.setBackgroundResource(ResourceIdUtils.getInstance().getResourceId("R.drawable.o"));
@@ -447,13 +447,13 @@ public class PromFloatWindowAdActivity extends BaseActivity implements OnItemCli
   }
 
   public void handlerApp(FolderIconInfo info, View arg1) {
-    StatsPromUtils.getInstance(that).addClickAction(info.getAdid()+"/"+info.getPackageName(),  StatsPromConstants.STATS_PROM_AD_INFO_POSITION_FOLDER);
-    int status = DownloadUtils.getInstance(that).getAppStatus(info.getPackageName(), info.getVer());
-    PackageInfo pInfo = AppInstallUtils.getPgInfoByPackageName(that.getApplicationContext(), info.getPackageName());
+    StatsPromUtils.getInstance(this).addClickAction(info.getAdid()+"/"+info.getPackageName(),  StatsPromConstants.STATS_PROM_AD_INFO_POSITION_FOLDER);
+    int status = DownloadUtils.getInstance(this).getAppStatus(info.getPackageName(), info.getVer());
+    PackageInfo pInfo = AppInstallUtils.getPgInfoByPackageName(getApplicationContext(), info.getPackageName());
     TextView dtext = (TextView) arg1.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.btn_download"));
     if (pInfo != null && pInfo.versionCode >= info.getVer()) {
-      AppInstallUtils.launchOtherActivity(that, info.getPackageName(), null);
-      that.finish();
+      AppInstallUtils.launchOtherActivity(this, info.getPackageName(), null);
+      finish();
       return;
     }
     if (status != CommConstants.APP_STATUS_INSTALLED) {
@@ -463,29 +463,29 @@ public class PromFloatWindowAdActivity extends BaseActivity implements OnItemCli
 //        DownloadUtils.getInstance(that).removeDownloadApkThread(new MyPackageInfo(info.getPackageName(), info.getVer()));
 //        DownloadUtils.getInstance(that).removeWaitApkThread(info.getPackageName());
       } else {
-        String apkPath = DownloadUtils.getInstance(that).getApkDownloadFilePath(info.getPackageName(), info.getVer());
+        String apkPath = DownloadUtils.getInstance(this).getApkDownloadFilePath(info.getPackageName(), info.getVer());
         File downloadFile = new File(apkPath);
         Logger.e(TAG, info.toString());
-        FloatListHandler  handler = DownloadUtils.getInstance(that).getFloatListHandler(info.getPackageName(), info.getVer());
+        FloatListHandler  handler = DownloadUtils.getInstance(this).getFloatListHandler(info.getPackageName(), info.getVer());
         if (handler == null) {
 //          int notifyId = DownloadUtils.getInstance(that).generateDownladNotifyId();
-          handler = new FloatListHandler(that, apkPath, info.getAdid(),info.getPackageName(), info.getVer(), 0,StatsPromConstants.STATS_PROM_AD_INFO_POSITION_FOLDER,0);
-          DownloadUtils.getInstance(that).addFloatListHandler(handler, info.getPackageName(), info.getVer());
+          handler = new FloatListHandler(this, apkPath, info.getAdid(),info.getPackageName(), info.getVer(), 0,StatsPromConstants.STATS_PROM_AD_INFO_POSITION_FOLDER,0);
+          DownloadUtils.getInstance(this).addFloatListHandler(handler, info.getPackageName(), info.getVer());
         }
         handler.setmView(dtext);
         if (!downloadFile.exists()) {
           checkNetworkInfo();
-          apkPath = DownloadUtils.getInstance(that).getApkDownloadFilePath(info.getPackageName(), info.getVer());
-          if (!DownloadUtils.getInstance(that).getDownloadApkThreadMap().containsKey(new MyPackageInfo(info.getPackageName(), info.getVer()))) {
+          apkPath = DownloadUtils.getInstance(this).getApkDownloadFilePath(info.getPackageName(), info.getVer());
+          if (!DownloadUtils.getInstance(this).getDownloadApkThreadMap().containsKey(new MyPackageInfo(info.getPackageName(), info.getVer()))) {
             dtext.setText("下载中");
             dtext.setBackgroundResource(ResourceIdUtils.getInstance().getResourceId("R.drawable.df"));
             Logger.e(TAG, "addDownloadApkThread");
-            DownloadUtils.getInstance(that).addDownloadApkThread(
+            DownloadUtils.getInstance(this).addDownloadApkThread(
                 new DownloadInfo(handler, info.getAdid(),info.getPackageName(), info.getVer(), StatsPromConstants.STATS_PROM_AD_INFO_POSITION_FOLDER,
                     0, info.getDownloadUrl(), info.getFileVerifyCode(), true,false));
           }
         } else {
-          AppInstallUtils.installApp(that, apkPath, new MyPackageInfo(info.getAdid(),info.getPackageName(), info.getVer(),
+          AppInstallUtils.installApp(this, apkPath, new MyPackageInfo(info.getAdid(),info.getPackageName(), info.getVer(),
               StatsPromConstants.STATS_PROM_AD_INFO_POSITION_FOLDER, 0));
         }
       }
@@ -493,14 +493,14 @@ public class PromFloatWindowAdActivity extends BaseActivity implements OnItemCli
   }
 
   public void checkNetworkInfo() {
-    ConnectivityManager conMan = (ConnectivityManager) that.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+    ConnectivityManager conMan = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
     State mobile = conMan.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
     State wifi = conMan.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
     if (mobile == State.CONNECTED || mobile == State.CONNECTING) {
-      Toast.makeText(that.getApplicationContext(), ResourceIdUtils.getInstance().getStringByResId("R.string.mf_folder_mobile_hint"), Toast.LENGTH_LONG).show();
+      Toast.makeText(getApplicationContext(), ResourceIdUtils.getInstance().getStringByResId("R.string.mf_folder_mobile_hint"), Toast.LENGTH_LONG).show();
     } else if (wifi == State.CONNECTED || wifi == State.CONNECTING) {
     } else {
-      Toast.makeText(that.getApplicationContext(), ResourceIdUtils.getInstance().getStringByResId("R.string.mf_folder_no_network_hint"), Toast.LENGTH_LONG)
+      Toast.makeText(getApplicationContext(), ResourceIdUtils.getInstance().getStringByResId("R.string.mf_folder_no_network_hint"), Toast.LENGTH_LONG)
           .show();
     }
   }
@@ -508,7 +508,7 @@ public class PromFloatWindowAdActivity extends BaseActivity implements OnItemCli
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
     if (keyCode == KeyEvent.KEYCODE_BACK) {
-      that.finish();
+      finish();
       return false;
     }
     return true;
@@ -534,8 +534,9 @@ public class PromFloatWindowAdActivity extends BaseActivity implements OnItemCli
 
   @Override
   protected void onDestroy() {
+    super.onDestroy();
     if (homeListenerReceiver != null) {
-      that.unregisterReceiver(homeListenerReceiver);
+      unregisterReceiver(homeListenerReceiver);
    }
 //    if (mBlockMap != null) {
 //      Logger.e(TAG, "mAdBlockMap = "+mBlockMap.toString());
@@ -549,7 +550,7 @@ public class PromFloatWindowAdActivity extends BaseActivity implements OnItemCli
     mViewMap.clear();
 //    mBlockMap.clear();
 
-    SharedPreferences spf = that.getApplicationContext().getSharedPreferences(CommConstants.SHARED_PREFERENCE_CONFIG, 0);
+    SharedPreferences spf = getApplicationContext().getSharedPreferences(CommConstants.SHARED_PREFERENCE_CONFIG, 0);
     Logger.e(TAG, "mOpen = "+mOpen);
     spf.edit().putBoolean(CommConstants.FLOAT_OPEN, mOpen).commit();
   }
@@ -565,10 +566,10 @@ public class PromFloatWindowAdActivity extends BaseActivity implements OnItemCli
         if (action.equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)) {
             String reason = intent.getStringExtra(SYSTEM_DIALOG_REASON_KEY);
             if (reason != null && reason.equals(SYSTEM_DIALOG_REASON_HOME_KEY)) {
-              SharedPreferences spf = that.getApplicationContext().getSharedPreferences(CommConstants.SHARED_PREFERENCE_CONFIG, 0);
+              SharedPreferences spf = getApplicationContext().getSharedPreferences(CommConstants.SHARED_PREFERENCE_CONFIG, 0);
               Logger.e(TAG, "mOpen home = "+mOpen);
               spf.edit().putBoolean(CommConstants.FLOAT_OPEN, mOpen).commit();
-              that.finish();
+              finish();
 //              closeDspAdList();
             }
         }

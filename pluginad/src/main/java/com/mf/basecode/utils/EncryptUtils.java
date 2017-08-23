@@ -240,7 +240,7 @@ public class EncryptUtils {
       }
       s = new String(a);
 
-    } catch (Exception e) {
+    } catch (Exception ignored) {
     }
     return s;
   }

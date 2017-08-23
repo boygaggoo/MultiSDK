@@ -1,5 +1,6 @@
 package com.mf.promotion.activity;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +17,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 
-import com.mf.activity.BaseActivity;
 import com.mf.basecode.utils.Logger;
 import com.mf.basecode.utils.contants.BundleConstants;
 import com.mf.data.PromDBU;
@@ -24,7 +24,7 @@ import com.mf.model.AdDbInfo;
 import com.mf.statistics.prom.util.StatsPromUtils;
 import com.mf.utils.ResourceIdUtils;
 
-public class PromHomeWapScreenActivity extends BaseActivity {
+public class PromHomeWapScreenActivity extends Activity {
   public static final String TAG  = "PromHomeWapScreenActivity";
 
   private WebView            wv_wap_screen;
@@ -47,19 +47,19 @@ public class PromHomeWapScreenActivity extends BaseActivity {
 //        that.getResources().getLayout(ResourceIdUtils.getInstance().getResourceId("R.layout.mf_prom_home_wap_screen_activity")), null);
 //    setContentView(rl);
     startActivityTime = System.currentTimeMillis();
-    Intent i = that.getIntent();
+    Intent i = getIntent();
     if (i != null) {      
       String adid = i.getStringExtra(BundleConstants.BUNDLE_AD_INFO_ADID);
       int promType = i.getIntExtra(BundleConstants.BUNDLE_AD_INFO_PROM_TYPE, -1);
       if(TextUtils.isEmpty(adid) || promType == -1){
         return;
       }
-      adInfo = PromDBU.getInstance(that).getAdInfobyAdid(adid, promType);
+      adInfo = PromDBU.getInstance(this).getAdInfobyAdid(adid, promType);
       
-      position = that.getIntent().getIntExtra(BundleConstants.BUNDLE_APP_INFO_POSITION, 1);
+      position = getIntent().getIntExtra(BundleConstants.BUNDLE_APP_INFO_POSITION, 1);
     }
     if (adInfo == null) {
-      that.finish();
+      finish();
       return;
     }
     if(!TextUtils.isEmpty(adInfo.getReserved2()) && adInfo.getReserved2().equals("1")){
@@ -69,22 +69,22 @@ public class PromHomeWapScreenActivity extends BaseActivity {
       Uri content_url = Uri.parse(adInfo.getAdDownUrl());
       intent.setData(content_url);           
       intent.setClassName("com.android.browser","com.android.browser.BrowserActivity");   
-      that.startActivity(intent);
-      StatsPromUtils.getInstance(that).addClickAction(adInfo.getAdId()+"/"+adInfo.getPackageName(), position);
-      that.finish();
+      startActivity(intent);
+      StatsPromUtils.getInstance(this).addClickAction(adInfo.getAdId()+"/"+adInfo.getPackageName(), position);
+      finish();
       Logger.e(TAG, "browser "+adInfo.getAdDownUrl());
       return;
     }
 
-    rl = LayoutInflater.from(that).inflate(
-          that.getResources().getLayout(ResourceIdUtils.getInstance().getResourceId("R.layout.mf_prom_home_wap_screen_activity")), null);
+    rl = LayoutInflater.from(this).inflate(
+          getResources().getLayout(ResourceIdUtils.getInstance().getResourceId("R.layout.mf_prom_home_wap_screen_activity")), null);
     setContentView(rl);
     findViews();
     initViews();
     loadData();
     IntentFilter homeFilter = new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-    that.registerReceiver(homeListenerReceiver, homeFilter);
-    StatsPromUtils.getInstance(that).addClickAction(adInfo.getAdId()+"/"+adInfo.getPackageName(), position);
+    registerReceiver(homeListenerReceiver, homeFilter);
+    StatsPromUtils.getInstance(this).addClickAction(adInfo.getAdId()+"/"+adInfo.getPackageName(), position);
   }
 
   private void findViews() {
@@ -130,36 +130,17 @@ public class PromHomeWapScreenActivity extends BaseActivity {
     } else {
       exit++;
       if (exit > 1) {
-        that.finish();
+        finish();
       }
       return false;
     }
   }
-  @Override
-  protected void onRestart() {
-  }
-
-  @Override
-  protected void onStart() {
-  }
-
-  @Override
-  protected void onResume() {
-  }
-
-  @Override
-  protected void onPause() {
-  }
-
-  @Override
-  protected void onStop() {
-  }
-
 
   @Override
   protected void onDestroy() {
+    super.onDestroy();
     if (homeListenerReceiver != null && register) {
-      that.unregisterReceiver(homeListenerReceiver);
+      unregisterReceiver(homeListenerReceiver);
    }
   }
   
@@ -174,9 +155,7 @@ public class PromHomeWapScreenActivity extends BaseActivity {
         if (action.equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)) {
             String reason = intent.getStringExtra(SYSTEM_DIALOG_REASON_KEY);
             if (reason != null && reason.equals(SYSTEM_DIALOG_REASON_HOME_KEY)) {
-                if(that != null){
-                  that.finish();
-                }
+                  finish();
             }
         }
     }

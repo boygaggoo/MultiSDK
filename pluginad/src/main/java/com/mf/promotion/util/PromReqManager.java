@@ -48,13 +48,13 @@ public class PromReqManager {
 
     if (mHandler != null) {
       synchronized (mHandler) {
-        if (mHandler.threadIsAlive == false) {
+        if (!mHandler.threadIsAlive) {
           needCreateThread = true;
         }
       }
     }
 
-    if ((mHandler == null) || (needCreateThread == true)) {
+    if ((mHandler == null) || (needCreateThread)) {
       mThread = new HandlerThread("Req Thread");
       mThread.start();
       mHandler = new PromReqThreadHandler(mThread.getLooper());
@@ -251,7 +251,7 @@ public class PromReqManager {
     }
 
     synchronized private void checkToQuit() {
-      if (hasMessages(UPDATE_MESSAGE_TYPE) == false) {
+      if (!hasMessages(UPDATE_MESSAGE_TYPE)) {
         threadIsAlive = false;
         getLooper().quit();
       }

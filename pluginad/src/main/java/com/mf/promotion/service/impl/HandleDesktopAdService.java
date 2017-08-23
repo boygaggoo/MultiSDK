@@ -366,12 +366,10 @@ public class HandleDesktopAdService extends HandleService {
       }
       File f = new File(imagePathFile, curAdDbInfo.getPicName());
       bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
-    } catch (Exception e) {
-      Logger.p(e);
-    } catch (OutOfMemoryError e) {
+    } catch (Exception | OutOfMemoryError e) {
       Logger.p(e);
     }
-//    if (bitmap != null) {
+    //    if (bitmap != null) {
       Logger.e(TAG, "showAdView");
 //      initSmallblock(curAdDbInfo);
       showAdView(bitmap);

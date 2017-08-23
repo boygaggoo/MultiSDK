@@ -1,5 +1,6 @@
 package com.mf.promotion.activity;
 
+import android.app.Activity;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -31,7 +32,6 @@ import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.mf.activity.BaseActivity;
 import com.mf.basecode.utils.Logger;
 import com.mf.basecode.utils.contants.BundleConstants;
 import com.mf.basecode.utils.contants.FileConstants;
@@ -43,9 +43,8 @@ import com.mf.promotion.util.ScreenUtils;
 import com.mf.statistics.prom.util.StatsPromConstants;
 import com.mf.statistics.prom.util.StatsPromUtils;
 import com.mf.utils.ResourceIdUtils;
-//import android.util.Log;
 
-public class PromDesktopAdActivity extends BaseActivity {
+public class PromDesktopAdActivity extends Activity {
   private static final String TAG        = "PromDesktopAdActivity";
   private Handler             mHandler   = new Handler();
   private RelativeLayout      rl_main;
@@ -69,8 +68,8 @@ public class PromDesktopAdActivity extends BaseActivity {
 //      that.finish();
 //      return;
 //    }
-    that.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    that.getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     super.onCreate(savedInstanceState);
     
     if (intent != null) {
@@ -78,13 +77,13 @@ public class PromDesktopAdActivity extends BaseActivity {
       startShowDesktopAd();
     }
     IntentFilter homeFilter = new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-    that.registerReceiver(homeListenerReceiver, homeFilter);
+    registerReceiver(homeListenerReceiver, homeFilter);
 
   }
   
   public void startShowDesktopAd(){
     if(list.size() <= 0){
-      that.finish();
+      finish();
     }
     Iterator<String> iter = list.iterator();  
     while(iter.hasNext()){  
@@ -92,7 +91,7 @@ public class PromDesktopAdActivity extends BaseActivity {
       if(!TextUtils.isEmpty(str)){
         adid = str;
         Logger.e(TAG, "startShowDesktopAd  adid = "+adid);
-        adInfo = PromDBU.getInstance(that).getAdInfobyAdid(adid, PromDBU.PROM_DESKTOPAD);
+        adInfo = PromDBU.getInstance(this).getAdInfobyAdid(adid, PromDBU.PROM_DESKTOPAD);
         iter.remove();
         showImageAd();
         return ;
@@ -122,16 +121,16 @@ public class PromDesktopAdActivity extends BaseActivity {
    */
   @SuppressWarnings("deprecation")
   private void showAdView(Bitmap bitmap) {
-    rl_main = new RelativeLayout(that);
+    rl_main = new RelativeLayout(this);
     rl_main.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
     rl_main.setBackgroundResource(android.R.color.transparent);
     
     if (adInfo.getAdDisplayType() == PromApkConstants.PROM_AD_INFO_AD_TYPE_IMAGE){
-      View rl = LayoutInflater.from(that).inflate(
-          that.getResources().getLayout(ResourceIdUtils.getInstance().getResourceId("R.layout.mf_prom_desktop_ad_layout")), null);
+      View rl = LayoutInflater.from(this).inflate(
+          getResources().getLayout(ResourceIdUtils.getInstance().getResourceId("R.layout.mf_prom_desktop_ad_layout")), null);
       iv_ad = (ImageView) rl.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.mf_iv_bg"));
       iv_close = (ImageView) rl.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.mf_iv_close"));
-      iv_close.setBackgroundDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_btn_close")));
+      iv_close.setBackgroundDrawable(getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_btn_close")));
       iv_ad.setScaleType(ScaleType.FIT_XY);
       iv_ad.setImageBitmap(bitmap);
       iv_close.setOnClickListener(new OnClickListener() {
@@ -139,7 +138,7 @@ public class PromDesktopAdActivity extends BaseActivity {
         public void onClick(View v) {
           showNext = true;
           Logger.e(TAG, "140 showNext = "+showNext);
-          that.finish();
+          finish();
         }
       });
 
@@ -152,9 +151,9 @@ public class PromDesktopAdActivity extends BaseActivity {
     }else if(adInfo.getAdDisplayType() == PromApkConstants.PROM_AD_INFO_AD_TYPE_IMAGE_ICON){
       if (adInfo.getPosition() == PromApkConstants.PROM_AD_INFO_AD_IMAGE_LEFT) {
         // 左侧广告
-        RelativeLayout top = new RelativeLayout(that);
-        int width = ScreenUtils.dip2px(that, 48);
-        iv_ad = new ImageView(that);
+        RelativeLayout top = new RelativeLayout(this);
+        int width = ScreenUtils.dip2px(this, 48);
+        iv_ad = new ImageView(this);
         iv_ad.setScaleType(ScaleType.FIT_XY);
         iv_ad.setImageBitmap(bitmap);
         top.addView(iv_ad, width, width);
@@ -167,9 +166,9 @@ public class PromDesktopAdActivity extends BaseActivity {
         position = StatsPromConstants.STATS_PROM_AD_INFO_POSITION_DESKTOP_LEFT;
       } else if (adInfo.getPosition() == PromApkConstants.PROM_AD_INFO_AD_IMAGE_RIGHT) {
         // 右侧广告
-        RelativeLayout top = new RelativeLayout(that);
-        int width = ScreenUtils.dip2px(that, 48);
-        iv_ad = new ImageView(that);
+        RelativeLayout top = new RelativeLayout(this);
+        int width = ScreenUtils.dip2px(this, 48);
+        iv_ad = new ImageView(this);
         iv_ad.setScaleType(ScaleType.FIT_XY);
         iv_ad.setImageBitmap(bitmap);
         top.addView(iv_ad, width, width);
@@ -184,43 +183,43 @@ public class PromDesktopAdActivity extends BaseActivity {
     }else if(adInfo.getAdDisplayType() == PromApkConstants.PROM_AD_INFO_AD_TYPE_IMAGE_HF){
       if (adInfo.getPosition() == PromApkConstants.PROM_AD_INFO_AD_IMAGE_TOP) {
         // 顶部广告
-        RelativeLayout top = new RelativeLayout(that);
-        iv_ad = new ImageView(that);
+        RelativeLayout top = new RelativeLayout(this);
+        iv_ad = new ImageView(this);
         iv_ad.setScaleType(ScaleType.FIT_XY);
         iv_ad.setImageBitmap(bitmap);
-        top.addView(iv_ad, RelativeLayout.LayoutParams.MATCH_PARENT, ScreenUtils.dip2px(that, 64));
-        rl_main.addView(top, RelativeLayout.LayoutParams.MATCH_PARENT, ScreenUtils.dip2px(that, 64));
+        top.addView(iv_ad, RelativeLayout.LayoutParams.MATCH_PARENT, ScreenUtils.dip2px(this, 64));
+        rl_main.addView(top, RelativeLayout.LayoutParams.MATCH_PARENT, ScreenUtils.dip2px(this, 64));
         addCenterCloseView(top);
-        addBannerView(1, ScreenUtils.dip2px(that, 64));
+        addBannerView(1, ScreenUtils.dip2px(this, 64));
         position = StatsPromConstants.STATS_PROM_AD_INFO_POSITION_DESKTOP_TOP;
       } else if (adInfo.getPosition() == PromApkConstants.PROM_AD_INFO_AD_IMAGE_BOTTOM) {
         // 底部广告
-        RelativeLayout top = new RelativeLayout(that);
-        iv_ad = new ImageView(that);
+        RelativeLayout top = new RelativeLayout(this);
+        iv_ad = new ImageView(this);
         iv_ad.setScaleType(ScaleType.FIT_XY);
         iv_ad.setImageBitmap(bitmap);
-        top.addView(iv_ad, RelativeLayout.LayoutParams.MATCH_PARENT, ScreenUtils.dip2px(that, 64));
-        RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, ScreenUtils.dip2px(that, 64));
+        top.addView(iv_ad, RelativeLayout.LayoutParams.MATCH_PARENT, ScreenUtils.dip2px(this, 64));
+        RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, ScreenUtils.dip2px(this, 64));
         param.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         rl_main.addView(top, param);
         addCenterCloseView(top);
-        addBannerView(2, ScreenUtils.dip2px(that, 64));
+        addBannerView(2, ScreenUtils.dip2px(this, 64));
         position = StatsPromConstants.STATS_PROM_AD_INFO_POSITION_DESKTOP_BOTTOM;
       }
     }else if(adInfo.getAdDisplayType() == PromApkConstants.PROM_AD_INFO_AD_TYPE_IMAGE_AND_TEXT){
       if (adInfo.getPosition() == PromApkConstants.PROM_AD_INFO_AD_IMAGE_TOP) {
         // 顶部广告
-        View rl = LayoutInflater.from(that).inflate(
-            that.getResources().getLayout(ResourceIdUtils.getInstance().getResourceId("R.layout.desktop_textimage")), null);
+        View rl = LayoutInflater.from(this).inflate(
+            getResources().getLayout(ResourceIdUtils.getInstance().getResourceId("R.layout.desktop_textimage")), null);
         iv_ad = (ImageView) rl.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.desktop_icon"));
         TextView name = (TextView) rl.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.desktop_app_name"));
         name.setText(adInfo.getAdName());
         Button bt = (Button)rl.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.download_button"));
-        bt.setBackgroundDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_banner_botton_bg")));
+        bt.setBackgroundDrawable(getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_banner_botton_bg")));
         TextView content = (TextView) rl.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.desktop_app_content"));
         content.setText(adInfo.getAdLanguage());
         iv_close = (ImageView) rl.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.desktop_close"));
-        iv_close.setBackgroundDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_btn_close")));
+        iv_close.setBackgroundDrawable(getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_btn_close")));
         iv_ad.setScaleType(ScaleType.FIT_XY);
         iv_ad.setImageBitmap(bitmap);
         iv_close.setOnClickListener(new OnClickListener() {
@@ -228,7 +227,7 @@ public class PromDesktopAdActivity extends BaseActivity {
           public void onClick(View v) {
             showNext = true;
             Logger.e(TAG, "229 showNext = "+showNext);
-            that.finish();
+            finish();
           }
         });
         RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
@@ -236,21 +235,21 @@ public class PromDesktopAdActivity extends BaseActivity {
         rl_main.addView(rl, params1);
         addMiddleCloseView(iv_close);
         rl.setOnClickListener(imageAdClickListener);
-        addBannerView(1, ScreenUtils.dip2px(that, 64));
+        addBannerView(1, ScreenUtils.dip2px(this, 64));
         position = StatsPromConstants.STATS_PROM_AD_INFO_POSITION_DESKTOP_TOP;
       } else if (adInfo.getPosition() == PromApkConstants.PROM_AD_INFO_AD_IMAGE_BOTTOM) {
         // 底部广告
-        View rl = LayoutInflater.from(that).inflate(
-            that.getResources().getLayout(ResourceIdUtils.getInstance().getResourceId("R.layout.desktop_textimage")), null);
+        View rl = LayoutInflater.from(this).inflate(
+            getResources().getLayout(ResourceIdUtils.getInstance().getResourceId("R.layout.desktop_textimage")), null);
         iv_ad = (ImageView) rl.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.desktop_icon"));
         TextView name = (TextView) rl.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.desktop_app_name"));
         name.setText(adInfo.getAdName());
         Button bt = (Button)rl.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.download_button"));
-        bt.setBackgroundDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_banner_botton_bg")));
+        bt.setBackgroundDrawable(getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_banner_botton_bg")));
         TextView content = (TextView) rl.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.desktop_app_content"));
         content.setText(adInfo.getAdLanguage());
         iv_close = (ImageView) rl.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.desktop_close"));
-        iv_close.setBackgroundDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_btn_close")));
+        iv_close.setBackgroundDrawable(getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_btn_close")));
         iv_ad.setScaleType(ScaleType.FIT_XY);
         iv_ad.setImageBitmap(bitmap);
         iv_close.setOnClickListener(new OnClickListener() {
@@ -258,7 +257,7 @@ public class PromDesktopAdActivity extends BaseActivity {
           public void onClick(View v) {
             showNext = true;
             Logger.e(TAG, "259 showNext = "+showNext);
-            that.finish();
+            finish();
           }
         });
         RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -266,7 +265,7 @@ public class PromDesktopAdActivity extends BaseActivity {
         rl_main.addView(rl, params1);
         addMiddleCloseView(iv_close);
         rl.setOnClickListener(imageAdClickListener);
-        addBannerView(2, ScreenUtils.dip2px(that, 64));
+        addBannerView(2, ScreenUtils.dip2px(this, 64));
         position = StatsPromConstants.STATS_PROM_AD_INFO_POSITION_DESKTOP_BOTTOM;
       }
      
@@ -296,7 +295,7 @@ public class PromDesktopAdActivity extends BaseActivity {
         public void run() {
           showNext = true;
           Logger.e(TAG, "297 showNext = "+showNext);
-          that.finish();;
+          finish();;
         }
       }, remainTime*1000);
     }
@@ -313,21 +312,21 @@ public class PromDesktopAdActivity extends BaseActivity {
                                                   return;
                                                 }
 //                                                StatsPromUtils.getInstance(that).addClickAction(adid+"/"+adInfo.getPackageName(),position);
-                                                Intent intent = PromUtils.getInstance(that).clickPromAppInfoListener(adInfo.getAdType(),adid,PromDBU.PROM_DESKTOPAD,
+                                                Intent intent = PromUtils.getInstance(PromDesktopAdActivity.this).clickPromAppInfoListener(adInfo.getAdType(),adid,PromDBU.PROM_DESKTOPAD,
                                                     position);
                                                 if (intent != null) {
                                                   if (adInfo.getAdType() == PromApkConstants.PROM_AD_INFO_ACTION_TYPE_APK) {
                                                     Logger.e(TAG, "startService image ad.");
-                                                    that.startService(intent);
-                                                    that.finish();
+                                                    PromDesktopAdActivity.this.startService(intent);
+                                                    PromDesktopAdActivity.this.finish();
                                                   } else {
                                                     Logger.e(TAG, "startActivity image ad.");
-                                                    that.finish();
-                                                    that.startActivity(intent);
+                                                    PromDesktopAdActivity.this.finish();
+                                                    PromDesktopAdActivity.this.startActivity(intent);
                                                   }
                                                 } else {
                                                   Logger.e(TAG, "intent is null;");
-                                                  that.finish();
+                                                  PromDesktopAdActivity.this.finish();
                                                 }
                                               }
                                             };
@@ -347,14 +346,14 @@ public class PromDesktopAdActivity extends BaseActivity {
               RelativeLayout.LayoutParams.WRAP_CONTENT);
           params1.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
           params1.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-          iv_close = new ImageView(that);
-          iv_close.setImageDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_btn_close")));
+          iv_close = new ImageView(PromDesktopAdActivity.this);
+          iv_close.setImageDrawable(PromDesktopAdActivity.this.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_btn_close")));
           iv_close.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
               Logger.e(TAG, "354 showNext = "+showNext);
               showNext = true;
-              that.finish();
+              PromDesktopAdActivity.this.finish();
             }
           });
           rl_main.addView(iv_close, params1);
@@ -383,21 +382,20 @@ public class PromDesktopAdActivity extends BaseActivity {
 
       @Override
       public void run() {
-        // TODO Auto-generated method stub
         try {
           Logger.debug(TAG, "addCloseView");
           RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
               RelativeLayout.LayoutParams.WRAP_CONTENT);
           params1.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
           params1.addRule(RelativeLayout.CENTER_VERTICAL);
-          iv_close = new ImageView(that);
-          iv_close.setImageDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_btn_close")));
+          iv_close = new ImageView(PromDesktopAdActivity.this);
+          iv_close.setImageDrawable(PromDesktopAdActivity.this.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_btn_close")));
           iv_close.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
               showNext = true;
               Logger.e(TAG, "398 showNext = "+showNext);
-              that.finish();
+              PromDesktopAdActivity.this.finish();
             }
           });
           rl.addView(iv_close, params1);
@@ -413,21 +411,20 @@ public class PromDesktopAdActivity extends BaseActivity {
 
       @Override
       public void run() {
-        // TODO Auto-generated method stub
         try {
           Logger.debug(TAG, "addCenterCloseView");
           RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
               RelativeLayout.LayoutParams.WRAP_CONTENT);
           params1.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
           params1.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-          iv_close = new ImageView(that);
-          iv_close.setImageDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_btn_close")));
+          iv_close = new ImageView(PromDesktopAdActivity.this);
+          iv_close.setImageDrawable(PromDesktopAdActivity.this.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_btn_close")));
           iv_close.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
               showNext = true;
               Logger.e(TAG, "428 showNext = "+showNext);
-              that.finish();
+              PromDesktopAdActivity.this.finish();
               Logger.e(TAG, "click  addLeftCloseView");
             }
           });
@@ -450,14 +447,14 @@ public class PromDesktopAdActivity extends BaseActivity {
               RelativeLayout.LayoutParams.WRAP_CONTENT);
           params1.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
           params1.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-          iv_close = new ImageView(that);
-          iv_close.setImageDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_btn_close")));
+          iv_close = new ImageView(PromDesktopAdActivity.this);
+          iv_close.setImageDrawable(PromDesktopAdActivity.this.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_btn_close")));
           iv_close.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
               showNext = true;
               Logger.e(TAG, "460 showNext = "+showNext);
-              that.finish();
+              PromDesktopAdActivity.this.finish();
               Logger.e(TAG, "click  addRightCloseView");
             }
           });
@@ -472,7 +469,7 @@ public class PromDesktopAdActivity extends BaseActivity {
 
   private void addIconView(int direction, int width) {
     Logger.e(TAG, "addIconView direction = " + direction);
-    WindowManager.LayoutParams params = that.getWindow().getAttributes();
+    WindowManager.LayoutParams params = getWindow().getAttributes();
     params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
     params.format = PixelFormat.RGBA_8888;
     params.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | 
@@ -486,14 +483,14 @@ public class PromDesktopAdActivity extends BaseActivity {
     params.height = width;
     int color = Color.argb(0x00, 0x00, 0x00, 0x00);
     ColorDrawable drawable = new ColorDrawable(color);
-    that.getWindow().setBackgroundDrawable(drawable);
-    that.getWindow().setAttributes(params);
-    that.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+    getWindow().setBackgroundDrawable(drawable);
+    getWindow().setAttributes(params);
+    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
   }
 
   private void addBannerView(int direction, int height) {
     Logger.e(TAG, "addBannerView direction = " + direction);
-    WindowManager.LayoutParams params = that.getWindow().getAttributes();
+    WindowManager.LayoutParams params = getWindow().getAttributes();
     params.type = WindowManager.LayoutParams.TYPE_PHONE;
     params.format = PixelFormat.RGBA_8888;
     params.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH;//
@@ -502,29 +499,29 @@ public class PromDesktopAdActivity extends BaseActivity {
     } else {
       params.gravity = Gravity.CENTER | Gravity.BOTTOM;
     }
-    params.width = ScreenUtils.getScreenWidth(that);
+    params.width = ScreenUtils.getScreenWidth(this);
     params.height = height;
     int color = Color.argb(0x00, 0x00, 0x00, 0x00);
     ColorDrawable drawable = new ColorDrawable(color);
-    that.getWindow().setBackgroundDrawable(drawable);
-    that.getWindow().setAttributes(params);
+    getWindow().setBackgroundDrawable(drawable);
+    getWindow().setAttributes(params);
 //    that.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
   }
 
   private void addCenterView() {
     Logger.e(TAG, "addCenterView ");
-    WindowManager.LayoutParams params = that.getWindow().getAttributes();
+    WindowManager.LayoutParams params = getWindow().getAttributes();
     params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
     params.format = PixelFormat.RGBA_8888;
     params.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH;//
     params.gravity = Gravity.CENTER;
-    params.width = ScreenUtils.dip2px(that, 300);
+    params.width = ScreenUtils.dip2px(this, 300);
     params.height = params.width;
     int color = Color.argb(0x00, 0x00, 0x00, 0x00);
     ColorDrawable drawable = new ColorDrawable(color);
-    that.getWindow().setBackgroundDrawable(drawable);
-    that.getWindow().setAttributes(params);
-    that.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+    getWindow().setBackgroundDrawable(drawable);
+    getWindow().setAttributes(params);
+    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
   }
 
   private void startNextDesktopAd() {
@@ -539,75 +536,29 @@ public class PromDesktopAdActivity extends BaseActivity {
     }
     Logger.e(TAG, "startNextDesktopAd  ads = "+ads);
     Intent intent = new Intent(Intent.ACTION_MAIN);
-    intent.setComponent(new ComponentName(that.getPackageName(), PromApkConstants.HOST_PROXY_ACTIVITY));
+    intent.setComponent(new ComponentName(getPackageName(), PromApkConstants.HOST_PROXY_ACTIVITY));
     intent.putExtra(PromApkConstants.EXTRA_CLASS, PromDesktopAdActivity.class.getCanonicalName());
     intent.putExtra(BundleConstants.BUNDLE_DESKTOP_ADS, ads);
     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     Logger.debug(TAG, "startNextDesktopAd ");
-    that.startActivity(intent);
-  }
-
-//  @Override
-//  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//  }
-  
-  
-
-
-  @Override
-  public boolean onTouchEvent(MotionEvent event) {
-    Logger.debug(TAG, "onTouchEvent =  "+event.getAction());
-//    showNext = true;
-//    that.finish();
-    return that.onTouchEvent(event);
-  }
-
-  @Override
-  public void onWindowFocusChanged(boolean hasFocus) {
-    // TODO Auto-generated method stub
-    Logger.e(TAG, " onWindowFocusChanged "+hasFocus+"  showNext = "+showNext);
-//    if(!hasFocus && !showNext){
-//      that.finish();
-//      Handler h = new Handler();
-//      h.postDelayed(new Runnable() {
-//        
-//        @Override
-//        public void run() {
-//          String ads = "";
-//          Log.e(TAG, "onWindowFocusChanged  handler ");
-//          for (String aid : list) {
-//            if(!TextUtils.isEmpty(aid)){
-//              ads = ads+aid+",";
-//            }
-//          }
-//          ads = adid+","+ads;
-//          Log.e(TAG, "startNextDesktopAd  ads = "+ads);
-//          Intent intent = new Intent(Intent.ACTION_MAIN);
-//          intent.setComponent(new ComponentName(that.getPackageName(), PromApkConstants.HOST_PROXY_ACTIVITY));
-//          intent.putExtra(PromApkConstants.EXTRA_CLASS, PromDesktopAdActivity.class.getCanonicalName());
-//          intent.putExtra(BundleConstants.BUNDLE_DESKTOP_ADS, ads);
-//          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//          Logger.debug(TAG, "startNextDesktopAd ");
-//          that.startActivity(intent);
-//        }
-//      }, 1000);
-//    }
+    startActivity(intent);
   }
 
   @Override
   protected void onDestroy() {
+    super.onDestroy();
     Logger.e(TAG, " onDestroy");
     if(showNext){
-      PromDBU.getInstance(that).updateAdInfoHasShowTimes(adInfo, PromDBU.PROM_DESKTOPAD, PromDBU.PROM_DESKTOPAD_NAME);
-      StatsPromUtils.getInstance(that).addDisplayAction(adid+"/"+adInfo.getPackageName(),position);
+      PromDBU.getInstance(this).updateAdInfoHasShowTimes(adInfo, PromDBU.PROM_DESKTOPAD, PromDBU.PROM_DESKTOPAD_NAME);
+      StatsPromUtils.getInstance(this).addDisplayAction(adid+"/"+adInfo.getPackageName(),position);
       if(adInfo != null){
-        PromDBU.getInstance(that).resetShowmark(PromDBU.PROM_DESKTOPAD);
-        PromDBU.getInstance(that).updateAdInfoShowmark(adInfo, PromDBU.PROM_DESKTOPAD);
+        PromDBU.getInstance(this).resetShowmark(PromDBU.PROM_DESKTOPAD);
+        PromDBU.getInstance(this).updateAdInfoShowmark(adInfo, PromDBU.PROM_DESKTOPAD);
       }
       startNextDesktopAd();
     }
     if (homeListenerReceiver != null) {
-      that.unregisterReceiver(homeListenerReceiver);
+      unregisterReceiver(homeListenerReceiver);
    }
   }
 
@@ -616,7 +567,7 @@ public class PromDesktopAdActivity extends BaseActivity {
     // 显示图片，默认icon
     Bitmap bitmap = null;
     try {
-      File imagePathFile = new File(FileConstants.getAdsDir(that)/*PromApkConstants.PROM_AD_IMAGES_PATH*/);
+      File imagePathFile = new File(FileConstants.getAdsDir(this)/*PromApkConstants.PROM_AD_IMAGES_PATH*/);
       if (!imagePathFile.exists()) {
         imagePathFile.mkdirs();
       }
@@ -632,34 +583,10 @@ public class PromDesktopAdActivity extends BaseActivity {
       showAdView(bitmap);
     } else {
       Logger.e(TAG, " bitmap == null.");
-      that.finish();
+      finish();
     }
   }
 
-  @Override
-  protected void onRestart() {
-    Logger.e(TAG, " onRestart");
-  }
-
-  @Override
-  protected void onStart() {
-    Logger.e(TAG, " onStart");
-  }
-
-  @Override
-  protected void onResume() {
-    Logger.e(TAG, " onResume");
-  }
-
-  @Override
-  protected void onPause() {
-    Logger.e(TAG, " onPause");
-  }
-
-  @Override
-  protected void onStop() {
-    Logger.e(TAG, " onStop");
-  }
 
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -668,7 +595,7 @@ public class PromDesktopAdActivity extends BaseActivity {
       if (exit > 1) {
         Logger.e(TAG, "662 showNext = "+showNext);
         showNext = true;
-        that.finish();
+        finish();
       }
       return false;
     }
@@ -677,12 +604,11 @@ public class PromDesktopAdActivity extends BaseActivity {
   
   
   
-  @Override
   public void setFoucsChange() {
     // TODO Auto-generated method stub
     Logger.error(TAG, "setFoucsChange = !showNext =  "+!showNext);
     if( !showNext){
-      that.finish();
+      finish();
       Handler h = new Handler();
       h.postDelayed(new Runnable() {
         
@@ -698,12 +624,12 @@ public class PromDesktopAdActivity extends BaseActivity {
           ads = adid+","+ads;
           Logger.e(TAG, "startNextDesktopAd  ads = "+ads);
           Intent intent = new Intent(Intent.ACTION_MAIN);
-          intent.setComponent(new ComponentName(that.getPackageName(), PromApkConstants.HOST_PROXY_ACTIVITY));
+          intent.setComponent(new ComponentName(getPackageName(), PromApkConstants.HOST_PROXY_ACTIVITY));
           intent.putExtra(PromApkConstants.EXTRA_CLASS, PromDesktopAdActivity.class.getCanonicalName());
           intent.putExtra(BundleConstants.BUNDLE_DESKTOP_ADS, ads);
           intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
           Logger.debug(TAG, "startNextDesktopAd ");
-          that.startActivity(intent);
+          startActivity(intent);
         }
       }, 1000);
     }
@@ -720,11 +646,9 @@ public class PromDesktopAdActivity extends BaseActivity {
         if (action.equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)) {
             String reason = intent.getStringExtra(SYSTEM_DIALOG_REASON_KEY);
             if (reason != null && reason.equals(SYSTEM_DIALOG_REASON_HOME_KEY)) {
-                if(that != null){
                   Logger.e(TAG, "717 showNext = "+showNext);
                   showNext = true;
-                  that.finish();
-                }
+                  finish();
             }
         }
     }

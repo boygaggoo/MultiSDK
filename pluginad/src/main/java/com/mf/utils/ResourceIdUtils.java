@@ -10,6 +10,7 @@ public class ResourceIdUtils {
   private static final String    TAG = "ResourceIdUtils";
 
   private ResourceIdUtils() {
+    mResources = getResources();
   }
   public static ResourceIdUtils getInstance() {
     if (mInstance == null) {
@@ -31,7 +32,6 @@ public class ResourceIdUtils {
   /**
    * 根据资源名获取资源id
    * 
-   * @param context
    * @param name
    *          如R.layout.aa
    * @return

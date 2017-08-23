@@ -5,6 +5,7 @@
   <application
       >
 
+    <service android:name=".promotion.service.MFApkService"/>
   </application>
 
 </manifest>

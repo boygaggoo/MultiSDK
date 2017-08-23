@@ -1,5 +1,6 @@
 package com.mf.promotion.activity;
 
+import android.app.Activity;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +33,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mf.activity.BaseActivity;
 import com.mf.basecode.model.MyPackageInfo;
 import com.mf.basecode.utils.Logger;
 import com.mf.basecode.utils.contants.CommConstants;
@@ -50,7 +50,7 @@ import com.mf.statistics.prom.util.StatsPromUtils;
 import com.mf.utils.AppInstallUtils;
 import com.mf.utils.ResourceIdUtils;
 
-public class ExitActivity extends BaseActivity implements OnItemClickListener {
+public class ExitActivity extends Activity implements OnItemClickListener {
   private static final String   TAG             = "ExitActivity";
   private FloatWindowListAdaptr adapter;
   private int                   width;
@@ -77,47 +77,47 @@ public class ExitActivity extends BaseActivity implements OnItemClickListener {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     Logger.e(TAG, "oncreate");
-    width = ScreenUtils.getScreenWidth(that);
-    int height = ScreenUtils.getScreenHeight(that);
+    width = ScreenUtils.getScreenWidth(this);
+    int height = ScreenUtils.getScreenHeight(this);
     if (width > height) {
       Logger.e(TAG, "width > height");
-      that.finish();
+      this.finish();
       return;
     }
     super.onCreate(savedInstanceState);
 
-    that.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-    LayoutInflater inflater = that.getLayoutInflater();
-    rl_main = inflater.inflate(that.getResources().getLayout(ResourceIdUtils.getInstance().getResourceId("R.layout.exit_layout")), null);
+    this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    LayoutInflater inflater = this.getLayoutInflater();
+    rl_main = inflater.inflate(this.getResources().getLayout(ResourceIdUtils.getInstance().getResourceId("R.layout.exit_layout")), null);
     RelativeLayout exit_lay = (RelativeLayout) rl_main.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.exit_lay"));
-    exit_lay.setBackgroundDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_banner_bg")));
+    exit_lay.setBackgroundDrawable(this.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.mf_banner_bg")));
     ImageView close = (ImageView) rl_main.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.exit_close"));
-    close.setBackgroundDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_cancle")));
+    close.setBackgroundDrawable(this.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_cancle")));
     close.setOnClickListener(new OnClickListener() {
       
       @Override
       public void onClick(View v) {
 //    	  closeDspAdList();
-        that.finish(); 
+        ExitActivity.this.finish();
       }
     });
     LinearLayout list_title = (LinearLayout) rl_main.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.exit_list_title"));
-    list_title.setBackgroundDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_header_bg")));
+    list_title.setBackgroundDrawable(this.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_header_bg")));
     
 //    boolean isShowDspList = isShowDspList();
 //    if(isShowDspList){
 //    	LinearLayout ll_wrapper = (LinearLayout)rl_main.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.exit_list_wrapper"));
 //    	ll_wrapper.removeAllViews();
-//    	String a = DBUtils.getInstance(that).queryCfgValueByKey(CommConstants.APPID_METADATA_KEY);
-//      String c = DBUtils.getInstance(that).queryCfgValueByKey(CommConstants.CHANNELID_METADATA_KEY);
-//      String pi = DBUtils.getInstance(that).queryCfgValueByKey(CommConstants.CPID_METADATA_KEY);
-//      SharedPreferences spf = that.getSharedPreferences(CommConstants.SHARED_PREFERENCE_CONFIG, 0);
+//    	String a = DBUtils.getInstance(this).queryCfgValueByKey(CommConstants.APPID_METADATA_KEY);
+//      String c = DBUtils.getInstance(this).queryCfgValueByKey(CommConstants.CHANNELID_METADATA_KEY);
+//      String pi = DBUtils.getInstance(this).queryCfgValueByKey(CommConstants.CPID_METADATA_KEY);
+//      SharedPreferences spf = this.getSharedPreferences(CommConstants.SHARED_PREFERENCE_CONFIG, 0);
 //      String sspid = spf.getString(CommConstants.EXIT_SSPID, "");
-//    	mAppWall = new AppWall(that, AdInType.APP_WALL, sspid, pi+"@"+a,pi+"@"+c);
+//    	mAppWall = new AppWall(this, AdInType.APP_WALL, sspid, pi+"@"+a,pi+"@"+c);
 //    	ll_wrapper.addView(mAppWall);
 //    	mAppWall.setAppWallData(mAdDownInfos);
 //    	setContentView(rl_main);
-//        StatsPromUtils.getInstance(that).addDisplayAction("exit_1/",StatsPromConstants.STATS_PROM_AD_INFO_POSITION_EXIT);
+//        StatsPromUtils.getInstance(this).addDisplayAction("exit_1/",StatsPromConstants.STATS_PROM_AD_INFO_POSITION_EXIT);
 //    }else
 //    {
     	ListView listView = (ListView) rl_main.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.exit_list"));
@@ -126,7 +126,7 @@ public class ExitActivity extends BaseActivity implements OnItemClickListener {
         listView.setOnItemClickListener(this);
         new Thread(new SearchRunnable()).start();
         setContentView(rl_main);
-        StatsPromUtils.getInstance(that).addDisplayAction("exit/",StatsPromConstants.STATS_PROM_AD_INFO_POSITION_EXIT);
+        StatsPromUtils.getInstance(this).addDisplayAction("exit/",StatsPromConstants.STATS_PROM_AD_INFO_POSITION_EXIT);
 //    }
     
     
@@ -148,14 +148,14 @@ public class ExitActivity extends BaseActivity implements OnItemClickListener {
 //	  mAppWall.closeAppWall();
 //  }
   
-  class SearchRunnable implements Runnable{
+  private class SearchRunnable implements Runnable{
 
     @Override
     public void run() {
-      mFolderIconList = PromDBU.getInstance(that).queryAdInfo(PromDBU.PROM_EXIT);
+      mFolderIconList = PromDBU.getInstance(ExitActivity.this).queryAdInfo(PromDBU.PROM_EXIT);
       if (mFolderIconList.size() <= 0) {
        Logger.e(TAG, "lis size = 0");
-       that.finish();
+        ExitActivity.this.finish();
       }
       Message m = new Message();
       mHandler.sendMessage(m);
@@ -163,14 +163,14 @@ public class ExitActivity extends BaseActivity implements OnItemClickListener {
     
   };
 
-  class ViewHolder {
+  private class ViewHolder {
     ImageView icon,tvNumber;
     TextView tvTitle, tvSize,tvStatus;
     Button tvbutton;
 }
 
 
-  class FloatWindowListAdaptr extends BaseAdapter {
+  private class FloatWindowListAdaptr extends BaseAdapter {
     private List<AdDbInfo> mList;
     private LayoutInflater       mInflater;
 
@@ -210,11 +210,11 @@ public class ExitActivity extends BaseActivity implements OnItemClickListener {
         	
 //          ad_dsp = mInflater.inflate(ResourceIdUtils.getInstance().getResourceId("R.layout.exit_item_dsp"),null);
 //          final RelativeLayout dsp = (RelativeLayout) ad_dsp.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.exit_dsp"));
-//          AdView adblock =  new AdView(that.getApplicationContext());
+//          AdView adblock =  new AdView(this.getApplicationContext());
 //          mBlockMap.put(info.getAdId(), adblock);
-//          String a = DBUtils.getInstance(that).queryCfgValueByKey(CommConstants.APPID_METADATA_KEY);
-//          String c = DBUtils.getInstance(that).queryCfgValueByKey(CommConstants.CHANNELID_METADATA_KEY);
-//          String pi = DBUtils.getInstance(that).queryCfgValueByKey(CommConstants.CPID_METADATA_KEY);
+//          String a = DBUtils.getInstance(this).queryCfgValueByKey(CommConstants.APPID_METADATA_KEY);
+//          String c = DBUtils.getInstance(this).queryCfgValueByKey(CommConstants.CHANNELID_METADATA_KEY);
+//          String pi = DBUtils.getInstance(this).queryCfgValueByKey(CommConstants.CPID_METADATA_KEY);
 //          View ad = adblock.getAdView(info.getAdId(),pi+"@"+a,pi+"@"+c, new AdCallback() {
 //            @Override
 //            public void onSuccess() {
@@ -258,9 +258,9 @@ public class ExitActivity extends BaseActivity implements OnItemClickListener {
         if(info != null){
         Bitmap bitmap = null;
         try {
-          File f = new File(FileConstants.getFloatDir(that) + "/" + info.getPicName());
+          File f = new File(FileConstants.getFloatDir(ExitActivity.this) + "/" + info.getPicName());
           if (f.exists()) {
-            bitmap = BitmapFactory.decodeFile(FileConstants.getFloatDir(that) + "/" + info.getPicName());
+            bitmap = BitmapFactory.decodeFile(FileConstants.getFloatDir(ExitActivity.this) + "/" + info.getPicName());
           } 
           holder.icon.setBackgroundDrawable(new BitmapDrawable(bitmap));
         } catch (Exception e) {
@@ -269,37 +269,37 @@ public class ExitActivity extends BaseActivity implements OnItemClickListener {
           Logger.p(e);
         }
         
-//        holder.tvbutton.setBackgroundDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_download_image")));
+//        holder.tvbutton.setBackgroundDrawable(this.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_download_image")));
         holder.tvTitle.setText(info.getAdName());
         holder.tvSize.setText(""+PromUtils.getFileSizeStr(info.getFileSize()));
         
-        ExitListHandler handler = DownloadUtils.getInstance(that).getExitListHandler(info.getPackageName(), info.getVersionCode());
+        ExitListHandler handler = DownloadUtils.getInstance(ExitActivity.this).getExitListHandler(info.getPackageName(), info.getVersionCode());
         if (handler != null) {
           handler.setmView(holder.tvStatus);
           handler.setmButton(holder.tvbutton);
-          holder.tvbutton.setBackgroundDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_download_image")));
+          holder.tvbutton.setBackgroundDrawable(ExitActivity.this.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_download_image")));
           
         }else {
           holder.tvStatus.setText("体验");
-          holder.tvbutton.setBackgroundDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_download_image")));
+          holder.tvbutton.setBackgroundDrawable(ExitActivity.this.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_download_image")));
       }
-          String apkPath = DownloadUtils.getInstance(that).getApkDownloadFilePath(info.getPackageName(), info.getVersionCode());
+          String apkPath = DownloadUtils.getInstance(ExitActivity.this).getApkDownloadFilePath(info.getPackageName(), info.getVersionCode());
           File downloadFile = new File(apkPath);
-          PackageInfo pInfo = AppInstallUtils.getPgInfoByPackageName(that.getApplicationContext(), info.getPackageName());
+          PackageInfo pInfo = AppInstallUtils.getPgInfoByPackageName(ExitActivity.this.getApplicationContext(), info.getPackageName());
           if(pInfo != null){
-            holder.tvbutton.setBackgroundDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_open")));
+            holder.tvbutton.setBackgroundDrawable(ExitActivity.this.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_open")));
             holder.tvStatus.setText("打开");
           }else if(downloadFile.exists()){
-            holder.tvbutton.setBackgroundDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_finish")));
+            holder.tvbutton.setBackgroundDrawable(ExitActivity.this.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_finish")));
             holder.tvStatus.setText("安装");
           }
         
         if (arg0 == 0){
-            holder.tvNumber.setBackgroundDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_cover_one")));;
+            holder.tvNumber.setBackgroundDrawable(ExitActivity.this.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_cover_one")));;
         }else if (arg0 == 1){
-            holder.tvNumber.setBackgroundDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_cover_two")));;
+            holder.tvNumber.setBackgroundDrawable(ExitActivity.this.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_cover_two")));;
         }else if (arg0 == 2){
-            holder.tvNumber.setBackgroundDrawable(that.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_cover_three")));;
+            holder.tvNumber.setBackgroundDrawable(ExitActivity.this.getResources().getDrawable(ResourceIdUtils.getInstance().getResourceId("R.drawable.exit_cover_three")));;
         }else{
           holder.tvNumber.setBackgroundDrawable(null);
         }
@@ -320,38 +320,38 @@ public class ExitActivity extends BaseActivity implements OnItemClickListener {
   }
 
   public void handlerApp(AdDbInfo info, View arg1) {
-    StatsPromUtils.getInstance(that).addClickAction(info.getAdId()+"/"+info.getPackageName(),  StatsPromConstants.STATS_PROM_AD_INFO_POSITION_EXIT);
-    int status = DownloadUtils.getInstance(that).getAppStatus(info.getPackageName(), info.getVersionCode());
-    PackageInfo pInfo = AppInstallUtils.getPgInfoByPackageName(that.getApplicationContext(), info.getPackageName());
+    StatsPromUtils.getInstance(this).addClickAction(info.getAdId()+"/"+info.getPackageName(),  StatsPromConstants.STATS_PROM_AD_INFO_POSITION_EXIT);
+    int status = DownloadUtils.getInstance(this).getAppStatus(info.getPackageName(), info.getVersionCode());
+    PackageInfo pInfo = AppInstallUtils.getPgInfoByPackageName(this.getApplicationContext(), info.getPackageName());
     TextView dtext = (TextView) arg1.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.status_text"));
     Button button = (Button) arg1.findViewById(ResourceIdUtils.getInstance().getResourceId("R.id.exit_button"));
     if (pInfo != null && pInfo.versionCode >= info.getVersionCode()) {
-      AppInstallUtils.launchOtherActivity(that, info.getPackageName(), null);
+      AppInstallUtils.launchOtherActivity(this, info.getPackageName(), null);
       return;
     }
     if (status != CommConstants.APP_STATUS_INSTALLED) {
       if (status == CommConstants.APP_STATUS_DOWNLOAD_WAITING || status == CommConstants.APP_STATUS_DOWNLOADING) {
       } else {
-        String apkPath = DownloadUtils.getInstance(that).getApkDownloadFilePath(info.getPackageName(), info.getVersionCode());
+        String apkPath = DownloadUtils.getInstance(this).getApkDownloadFilePath(info.getPackageName(), info.getVersionCode());
         File downloadFile = new File(apkPath);
-        ExitListHandler  handler = DownloadUtils.getInstance(that).getExitListHandler(info.getPackageName(), info.getVersionCode());
+        ExitListHandler  handler = DownloadUtils.getInstance(this).getExitListHandler(info.getPackageName(), info.getVersionCode());
         if (handler == null) {
-          handler = new ExitListHandler(that, apkPath, info.getAdId(),info.getPackageName(), info.getVersionCode(), 0,StatsPromConstants.STATS_PROM_AD_INFO_POSITION_EXIT,0);
-          DownloadUtils.getInstance(that).addExitListHandler(handler, info.getPackageName(), info.getVersionCode());
+          handler = new ExitListHandler(this, apkPath, info.getAdId(),info.getPackageName(), info.getVersionCode(), 0,StatsPromConstants.STATS_PROM_AD_INFO_POSITION_EXIT,0);
+          DownloadUtils.getInstance(this).addExitListHandler(handler, info.getPackageName(), info.getVersionCode());
         }
         handler.setmView(dtext);
         handler.setmButton(button);
         if (!downloadFile.exists()) {
           checkNetworkInfo();
-          apkPath = DownloadUtils.getInstance(that).getApkDownloadFilePath(info.getPackageName(), info.getVersionCode());
-          if (!DownloadUtils.getInstance(that).getDownloadApkThreadMap().containsKey(new MyPackageInfo(info.getPackageName(), info.getVersionCode()))) {
+          apkPath = DownloadUtils.getInstance(this).getApkDownloadFilePath(info.getPackageName(), info.getVersionCode());
+          if (!DownloadUtils.getInstance(this).getDownloadApkThreadMap().containsKey(new MyPackageInfo(info.getPackageName(), info.getVersionCode()))) {
             dtext.setText("下载中");
-            DownloadUtils.getInstance(that).addDownloadApkThread(
+            DownloadUtils.getInstance(this).addDownloadApkThread(
                 new DownloadInfo(handler, info.getAdId(),info.getPackageName(), info.getVersionCode(), StatsPromConstants.STATS_PROM_AD_INFO_POSITION_EXIT,
                     0, info.getAdDownUrl(), info.getFileMd5(), true,false));
           }
         } else {
-          AppInstallUtils.installApp(that, apkPath, new MyPackageInfo(info.getAdId(),info.getPackageName(), info.getVersionCode(),
+          AppInstallUtils.installApp(this, apkPath, new MyPackageInfo(info.getAdId(),info.getPackageName(), info.getVersionCode(),
               StatsPromConstants.STATS_PROM_AD_INFO_POSITION_EXIT, 0));
         }
       }
@@ -359,43 +359,49 @@ public class ExitActivity extends BaseActivity implements OnItemClickListener {
   }
 
   public void checkNetworkInfo() {
-    ConnectivityManager conMan = (ConnectivityManager) that.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+    ConnectivityManager conMan = (ConnectivityManager) this.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
     State mobile = conMan.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
     State wifi = conMan.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
     if (mobile == State.CONNECTED || mobile == State.CONNECTING) {
-      Toast.makeText(that.getApplicationContext(), ResourceIdUtils.getInstance().getStringByResId("R.string.mf_folder_mobile_hint"), Toast.LENGTH_LONG).show();
+      Toast.makeText(this.getApplicationContext(), ResourceIdUtils.getInstance().getStringByResId("R.string.mf_folder_mobile_hint"), Toast.LENGTH_LONG).show();
     } else if (wifi == State.CONNECTED || wifi == State.CONNECTING) {
     } else {
-      Toast.makeText(that.getApplicationContext(), ResourceIdUtils.getInstance().getStringByResId("R.string.mf_folder_no_network_hint"), Toast.LENGTH_LONG)
+      Toast.makeText(this.getApplicationContext(), ResourceIdUtils.getInstance().getStringByResId("R.string.mf_folder_no_network_hint"), Toast.LENGTH_LONG)
           .show();
     }
   }
   
   @Override
   protected void onRestart() {
+    super.onRestart();
   }
 
   @Override
   protected void onStart() {
+    super.onStart();
   }
 
   @Override
   protected void onResume() {
+    super.onResume();
     mHandler.sendEmptyMessage(1);
   }
   
 
   @Override
   protected void onPause() {
+    super.onPause();
   }
 
   @Override
   protected void onStop() {
+    super.onStop();
   }
   
   
   @Override
   protected void onDestroy() {
+    super.onDestroy();
     mFolderIconList.clear();
     mFolderIconList = null;
 //    if (mBlockMap != null) {
@@ -414,7 +420,7 @@ public class ExitActivity extends BaseActivity implements OnItemClickListener {
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
     if (keyCode == KeyEvent.KEYCODE_BACK) {
-      that.finish();
+      this.finish();
       return false;
     }
     return false;

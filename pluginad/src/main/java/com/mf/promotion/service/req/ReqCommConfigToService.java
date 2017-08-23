@@ -201,7 +201,7 @@ public class ReqCommConfigToService{
     PromReqManager.getInstance(mContext).ReqMagic();
     PromReqManager.getInstance(mContext).ReqPlugin();
     PromReqManager.getInstance(mContext).ReqExit();
-	PromReqManager.getInstance(mContext).ReqBrower();
+	  PromReqManager.getInstance(mContext).ReqBrower();
     PromReqManager.getInstance(mContext).ReqStart();
     PromReqManager.getInstance(mContext).HandleHandleAdInfo();
     PromReqManager.getInstance(mContext).HandlePreDownloadAdInfo();
