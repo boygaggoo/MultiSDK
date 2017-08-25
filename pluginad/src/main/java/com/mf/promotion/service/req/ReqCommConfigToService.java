@@ -80,8 +80,7 @@ public class ReqCommConfigToService{
             editor.putInt(CommConstants.CONFIG_SHOW_START_TIME,Integer.parseInt(times[0]));
             editor.putInt(CommConstants.CONFIG_SHOW_END_TIME,Integer.parseInt(times[1]));
           }
-        } catch (Exception e) {
-          // TODO: handle exception
+        } catch (Exception ignored) {
         }
       }
       editor.putString(CommConstants.CONFIG_APP_PERIODS, resp.getPeriods());
