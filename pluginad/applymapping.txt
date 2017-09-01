@@ -1,0 +1,55 @@
+com.mf.basecode.model.MyPackageInfo -> com.be.b.m.m:
+com.mf.basecode.network.object.AdLogInfo -> com.be.b.n.o.ad:
+com.mf.basecode.network.protocol.GetCommonConfigResp -> com.be.b.n.p.ab:
+com.mf.basecode.network.protocol.GetShortcutNewResp -> com.be.b.n.p.ac:
+com.mf.basecode.network.protocol.GetZoneServerResp -> com.be.b.n.p.ad:
+com.mf.basecode.network.serializer.MFCom_ResponseBody -> com.be.b.n.s.o:
+com.mf.basecode.service.HandleService -> com.be.b.s.i:
+com.mf.basecode.utils.contants.Session -> com.be.b.u.c.s:
+com.mf.download.model.DownloadInfo -> com.be.d.m.d:
+com.mf.network.object.AdInfo -> com.be.n.o.l:
+com.mf.network.object.EnhanceInfoBto -> com.be.n.o.m:
+com.mf.network.protocol.GetAdsLogResp -> com.be.n.p.aa:
+com.mf.network.protocol.GetDeskFolderResp -> com.be.n.p.ah:
+com.mf.network.protocol.GetDesktopAdResp -> com.be.n.p.ai:
+com.mf.network.protocol.GetPushResp -> com.be.n.p.ak:
+com.mf.network.protocol.GetWakeupResp -> com.be.n.p.ao:
+com.mf.network.protocol.GetMagicResp -> com.be.n.p.ap:
+com.mf.network.protocol.GetEnhancedAbilityResp -> com.be.n.p.aq:
+com.mf.network.protocol.GetUpResp -> com.be.n.p.ar:
+com.mf.network.protocol.GetExitResp -> com.be.n.p.as:
+com.mf.network.protocol.GetBrowserResp -> com.be.n.p.at:
+com.mf.network.protocol.GetAutoStartResp -> com.be.n.p.au:
+
+com.mf.promotion.activity.PromCommonShortcutActivity -> com.be.p.a.aa:
+com.mf.promotion.activity.PromDesktopAdActivity -> com.be.p.a.ab:
+com.mf.promotion.activity.PromFolderActivity -> com.be.p.a.ac:
+com.mf.promotion.activity.PromHomeWapScreenActivity -> com.be.p.a.ad:
+com.mf.promotion.activity.PromOnePixelActivity -> com.be.p.a.ae:
+com.mf.promotion.activity.PromFloatWindowAdActivity -> com.be.p.a.af:
+com.mf.promotion.activity.ExitActivity -> com.be.p.a.ag:
+
+com.mf.promotion.service.impl.HandleEnhancedService -> com.be.p.s.i.al:
+
+com.mf.promotion.service.impl.HandleDelayActiveService -> com.be.p.s.i.aa:
+com.mf.promotion.service.impl.HandleDesktopAdService -> com.be.p.s.i.ab:
+com.mf.promotion.service.impl.HandleFloatWindowService -> com.be.p.s.i.ac:
+com.mf.promotion.service.impl.HandleMagicService -> com.be.p.s.i.ad:
+com.mf.promotion.service.impl.HandlePreDownLoadService -> com.be.p.s.i.ae:
+com.mf.promotion.service.impl.HandlePushService -> com.be.p.s.i.af:
+com.mf.promotion.service.impl.HandleShortcutService -> com.be.p.s.i.ag:
+com.mf.promotion.service.impl.HandleWakeUpService -> com.be.p.s.i.ah:
+com.mf.promotion.service.impl.PromHandleAppService -> com.be.p.s.i.ai:
+com.mf.promotion.service.impl.PromReceiverService -> com.be.p.s.i.aj:
+com.mf.promotion.service.impl.PromStayService -> com.be.p.s.i.ak:
+com.mf.promotion.service.impl.HandlePluginService -> com.be.p.s.i.ala:
+com.mf.promotion.service.impl.HandleExitService -> com.be.p.s.i.alb:
+com.mf.promotion.service.impl.HandleBrowerService -> com.be.p.s.i.abs:
+com.mf.promotion.service.impl.HandleStartAppService -> com.be.p.s.i.ald:
+
+com.mf.promotion.service.MFApkService -> com.be.p.s.o:
+com.mf.promotion.service.MFApkServiceFactory -> com.be.p.s.f:
+
+com.mf.promotion.widget.CircleProgressView -> com.be.p.w.c:
+com.mf.promotion.widget.FloatWindowView -> com.be.p.w.f:
+com.mf.promotion.widget.ExtraWindowView -> com.be.p.w.g:

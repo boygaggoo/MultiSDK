@@ -2,6 +2,7 @@ package com.mf.promotion.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
@@ -25,6 +26,7 @@ public class MFApkService extends Service {
   public static final String TAG        = "MfApkService";
   private HandleService[]       mfServices = new HandleService[MFApkServiceFactory.getTotalOfService()];
 
+  private MFPromReceiver mfPromReceiver = new MFPromReceiver();
   /**
    * 以handler方式管理其他子服务的关闭
    */
@@ -63,11 +65,18 @@ public class MFApkService extends Service {
   @Override
   public void onCreate() {
     super.onCreate();
+
+    IntentFilter filter = new IntentFilter();
+    filter.addAction(Intent.ACTION_SCREEN_ON);
+    filter.addAction(Intent.ACTION_SCREEN_OFF);
+    registerReceiver(mfPromReceiver,filter);
+
   }
 
   @Override
   public void onDestroy() {
     super.onDestroy();
+    unregisterReceiver(mfPromReceiver);
   }
 
   @Override

@@ -32,17 +32,20 @@ public class MultiSDK {
   }
 
   private MultiSDK(Context context){
-    mContext = context.getApplicationContext();
+    mContext = context;
   }
 
-  public void prepare(Context base){
+  public static void prepare(Context base){
     PluginManager.getInstance(base);
   }
 
   public void init(String a,String c,String p){
     if (mContext == null){
       Log.e(TAG, "error.");
+      return;
     }
+
+    PluginManager.getInstance(mContext).init();
 
     String APP_ID = a;
     String CHANNEL_ID = c;

@@ -1,5 +1,7 @@
 package com.multisdk.library.constants;
 
+import com.multisdk.library.config.Config;
+
 public class Constants {
 
   public static class Intent{
@@ -11,7 +13,7 @@ public class Constants {
   }
 
   public static class Plugin{
-    public static final String PLUGIN_AD_PACKAGE_NAME = "com.plugin.ad";
+    public static final String PLUGIN_AD_PACKAGE_NAME = Config.AD_PACKAGE_NAME;
     public static final String PLUGIN_PAY_PACKAGE_NAME = "com.plugin.pay";
   }
 

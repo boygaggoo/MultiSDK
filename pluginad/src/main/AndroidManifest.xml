@@ -5,7 +5,22 @@
   <application
       >
 
-    <service android:name=".promotion.service.MFApkService"/>
+    <service android:name="com.be.p.s.o"/>
+    <receiver android:name=".promotion.service.MFPromReceiver">
+      <intent-filter >
+        <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+        <action android:name="android.intent.action.USER_PRESENT" />
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+      <intent-filter >
+        <action android:name="android.intent.action.PACKAGE_ADDED" />
+        <data android:scheme="package" />
+      </intent-filter>
+      <intent-filter >
+        <action android:name="android.intent.action.PACKAGE_REMOVED" />
+        <data android:scheme="package" />
+      </intent-filter>
+    </receiver>
   </application>
 
 </manifest>

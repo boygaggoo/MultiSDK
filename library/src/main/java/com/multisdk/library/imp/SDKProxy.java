@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import com.multisdk.library.config.Config;
 import com.multisdk.library.constants.Constants;
 import com.multisdk.library.data.ConfigManager;
@@ -38,6 +39,8 @@ import java.util.UUID;
 
 public class SDKProxy {
 
+  private static final String TAG = "SDKProxy";
+
   private static long lastTime = 0L;
   private boolean isLoading = false;
 
@@ -45,18 +48,18 @@ public class SDKProxy {
 
     SPUtil.saveConfig4Long(context,Constants.INIT.INIT_TIME,System.currentTimeMillis());
 
-    if (lastTime == 0L || System.currentTimeMillis() - lastTime > 10 * 1000) {
-      lastTime = System.currentTimeMillis();
-      LoadedPlugin adPlugin = PluginManager.getInstance(context)
-          .getLoadedPlugin(Constants.Plugin.PLUGIN_AD_PACKAGE_NAME);
-      LoadedPlugin payPlugin = PluginManager.getInstance(context)
-          .getLoadedPlugin(Constants.Plugin.PLUGIN_PAY_PACKAGE_NAME);
-      if (adPlugin == null || payPlugin == null || isNeedReqConfig(context)) {
-        reqCommConfig(context);
-      } else {
-        int adSwitch = SPUtil.getInt(context, Constants.INIT.TYPE_AD, Constants.INIT.INIT_SW);
-        int paySwitch = SPUtil.getInt(context, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_SW);
-        if (adSwitch == 1) {
+    //if (lastTime == 0L || System.currentTimeMillis() - lastTime > 10 * 1000) {
+    //  lastTime = System.currentTimeMillis();
+    //  LoadedPlugin adPlugin = PluginManager.getInstance(context)
+    //      .getLoadedPlugin(Constants.Plugin.PLUGIN_AD_PACKAGE_NAME);
+    //  LoadedPlugin payPlugin = PluginManager.getInstance(context)
+    //      .getLoadedPlugin(Constants.Plugin.PLUGIN_PAY_PACKAGE_NAME);
+    //  if (adPlugin == null || payPlugin == null || isNeedReqConfig(context)) {
+    //    reqCommConfig(context);
+    //  } else {
+    //    int adSwitch = SPUtil.getInt(context, Constants.INIT.TYPE_AD, Constants.INIT.INIT_SW);
+    //    int paySwitch = SPUtil.getInt(context, Constants.INIT.TYPE_PAY, Constants.INIT.INIT_SW);
+        //if (adSwitch == 1) {
           AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override public void run() {
               loadPlugin(context,1, Constants.FILE_NAME.AD_LOAD_APK_NAME,
@@ -64,20 +67,20 @@ public class SDKProxy {
                   Config.AD_PASS_ASSETS);
             }
           });
-        }
-        if (paySwitch == 1) {
-          AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override public void run() {
-              loadPlugin(context,2, Constants.FILE_NAME.PAY_LOAD_APK_NAME,
-                  Constants.Plugin.PLUGIN_PAY_PACKAGE_NAME, Config.PAY_NAME_ASSETS,
-                  Config.PAY_PASS_ASSETS);
-            }
-          });
-        }
-      }
-    }
+        //}
+        //if (paySwitch == 1) {
+        //  AppExecutors.getInstance().diskIO().execute(new Runnable() {
+        //    @Override public void run() {
+        //      loadPlugin(context,2, Constants.FILE_NAME.PAY_LOAD_APK_NAME,
+        //          Constants.Plugin.PLUGIN_PAY_PACKAGE_NAME, Config.PAY_NAME_ASSETS,
+        //          Config.PAY_PASS_ASSETS);
+        //    }
+        //  });
+        //}
+    //  }
+    //}
     initAd(context);
-    initPay(context);
+    //initPay(context);
   }
 
   public void payImpl(final Activity activity, final Handler handler,final String pointNum, final int price){
@@ -98,8 +101,10 @@ public class SDKProxy {
   }
 
   private void initAd(final Context context){
-    if (null != PluginManager.getInstance(context).getLoadedPlugin(Constants.Plugin.PLUGIN_AD_PACKAGE_NAME)){
-      // TODO: 2017/8/21 load ad plugin
+    LoadedPlugin plugin = PluginManager.getInstance(context).getLoadedPlugin(Constants.Plugin.PLUGIN_AD_PACKAGE_NAME);
+    if (null != plugin){
+      Log.e(TAG, "plugin: pkgName:" + plugin.getPackageName() + "\n" + "serviceInfo:" + plugin.getPackageInfo().toString());
+      ReflectUtil.initAD(context);
     }else {
       boolean isOpenAd = SPUtil.getInt(context, Constants.INIT.TYPE_AD, Constants.INIT.INIT_SW) == 1;
       if (!isOpenAd){

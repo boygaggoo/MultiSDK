@@ -25,6 +25,7 @@
       </intent-filter>
     </activity>
     <activity android:launchMode="standard" android:name="com.didi.virtualapk.core.A$1"/>
+    <service android:name="com.multisdk.library.virtualapk.delegate.LocalService"/>
   </application>
 
 </manifest>

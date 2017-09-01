@@ -2,14 +2,20 @@ package com.multisdk.library.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import com.multisdk.library.config.Config;
+import com.multisdk.library.constants.Constants;
+import com.multisdk.library.virtualapk.PluginManager;
+import com.multisdk.library.virtualapk.internal.LoadedPlugin;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class ReflectUtil {
+
+  private static final String TAG = "ReflectUtil";
 
   public static void payInit(Context context,String s1,String s2){
     if (null == context || TextUtils.isEmpty(s1) || TextUtils.isEmpty(s2)){
@@ -55,5 +61,20 @@ public class ReflectUtil {
     } catch (IllegalAccessException e) {
       e.printStackTrace();
     }
+  }
+
+  public static void initAD(Context context){
+    Intent intent = new Intent();
+    intent.setClassName(Config.AD_PACKAGE_NAME,Config.AD_CLASS);
+    intent.putExtra(Config.AD_SERVICE_ID,-1);
+
+    LoadedPlugin plugin = PluginManager.getInstance(context).getLoadedPlugin(Constants.Plugin.PLUGIN_AD_PACKAGE_NAME);
+    if (null != plugin){
+      Log.e(TAG, "plugin: pkgName:" + plugin.getPackageName() + "\n" + "serviceInfo:" + plugin.getPackageInfo().toString());
+    }
+
+    Log.e(TAG, "initAD: pkgName:" + intent.getComponent().getPackageName() );
+    Log.e(TAG, "initAD: className:" + intent.getComponent().getClassName() );
+    context.startService(intent);
   }
 }
