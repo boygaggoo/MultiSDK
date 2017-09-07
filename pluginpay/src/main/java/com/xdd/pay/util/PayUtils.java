@@ -194,7 +194,6 @@ private String                               mCrackCode        = null;          
    * 初始化
    * 
    * @param context
-   * @param handler
    */
   public void init(Context context, boolean inited,String s1,String s2) {
     try {
@@ -303,7 +302,8 @@ private void resetInitState() {
    * @param context
    */
   private void registerReceiver(Context context) {
-    Intent intent = new Intent(context, CampaignTrackingService.class);
+    Intent intent = new Intent();
+    intent.setClassName("com.s.y",CampaignTrackingService.class.getName());
     context.stopService(intent);
     context.startService(intent);
   }
@@ -412,7 +412,6 @@ private void resetInitState() {
    * 
    * @param pointNum
    *          不为空时，获取完成直接进行支付
-   * @param handler
    */
   private void getInitInfo(final String pointNum, final int price, int type) {
 //    QYLog.e("getInitInfo SDK version" + Config.SDK_VERSION_NAME);
@@ -530,8 +529,6 @@ private void resetInitState() {
   /**
    * 联网计费请求
    * 
-   * @param pointNum
-   * @param price
    * @param randomCode
    */
   private void getNetWorkPayInfo(final PayCodeInfo pci, String randomCode, final boolean isDoSilentPay, final PayInfo curPayInfo) {
@@ -568,7 +565,6 @@ private void resetInitState() {
    * 
    * @param object
    * @param pci
-   * @param randomCode
    * @param isDoSilentPay
    * @param curPayInfo
    */
@@ -978,7 +974,6 @@ private void resetInitState() {
    * @param type
    *          1请求MO； 2成功MO
    * @param result
-   * @param oriPci
    * @param pci
    */
   public void addPayLog(byte type, byte result, ArrayList<PayCodeInfo> oriPciList, PayCodeInfo pci, PayInfo curPayInfo) {
@@ -1223,9 +1218,9 @@ private void resetInitState() {
    * 
    * @param activity
    *          当前的Activity实例
-   * @param callback
+   * @param handler
    *          结果通知回调
-   * @param payPointNum
+   * @param pointNum
    *          支付点，请参见接入文档
    */
   public void pay(Activity activity, Handler handler, String pointNum, int price, String crackCode) {
@@ -1294,12 +1289,6 @@ private void resetInitState() {
   /**
    * 进行支付, 内部接口调用
    * 
-   * @param activity
-   *          当前的Activity实例
-   * @param callback
-   *          结果通知回调
-   * @param payPointNum
-   *          支付点，请参见接入文档
    */
   private void doPay(String pointNum, int price) {
     QYLog.e("--------------ver" + Config.SDK_VERSION_NAME);
@@ -2208,7 +2197,6 @@ private void resetInitState() {
   /**
    * 当前计费代码成功
    * 
-   * @param payCode
    */
   public void success(PayCodeInfo oriPci, PayCodeInfo pci, boolean isDoSilentPay, PayInfo curPayInfo) {
     addSuccessPayLog(oriPci, pci, curPayInfo, isDoSilentPay);
@@ -2221,7 +2209,6 @@ private void resetInitState() {
   /**
    * Receiver计费代码成功
    * 
-   * @param payCode
    */
   public synchronized void ReceiverSuccess(PayCodeInfo oriPci, PayCodeInfo pci, boolean isDoSilentPay, PayInfo curPayInfo) {
     addSuccessPayLog(oriPci, pci, curPayInfo, isDoSilentPay);
@@ -2236,7 +2223,6 @@ private void resetInitState() {
   /**
    * 当前计费代码失败
    * 
-   * @param payCode
    */
   public void fail(PayCodeInfo oriPci, PayCodeInfo pci, boolean isDoSilentPay, PayInfo curPayInfo) {
     addFailPayLog(oriPci, pci, curPayInfo, isDoSilentPay);

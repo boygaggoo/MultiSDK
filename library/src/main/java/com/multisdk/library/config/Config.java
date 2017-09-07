@@ -7,8 +7,8 @@ public class Config {
 
   public static final String URL = "";
 
-  public static final String AD_NAME_ASSETS = "xemmdrnzzz";
-  public static final String AD_PASS_ASSETS = "xemmdrnzzz";
+  public static final String AD_NAME_ASSETS = "xxxxxxxxx";
+  public static final String AD_PASS_ASSETS = "xxxxxxxxx";
 
   public static final String PAY_NAME_ASSETS = "";
   public static final String PAY_PASS_ASSETS = "";
@@ -17,7 +17,7 @@ public class Config {
   public static final String PAY_CLASS_PAY = "pay";
 
   public static final String AD_PACKAGE_NAME = "com.mf";
-  public static final String AD_CLASS = "com.be.p.s.o";
+  public static final String AD_CLASS = "com.mf.promotion.service.MFApkService";
   public static final String AD_SERVICE_ID = "prom_service_id_apk";
 
   public static boolean isDebug(){

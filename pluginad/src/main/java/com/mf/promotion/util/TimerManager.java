@@ -1,5 +1,6 @@
 package com.mf.promotion.util;
 
+import com.mf.promotion.service.MFApkService;
 import java.util.Calendar;
 import java.util.Random;
 
@@ -99,7 +100,7 @@ public class TimerManager {
   }
   private PendingIntent getPendingIntent(int serviceId, Bundle b) {
     Intent pandingIntent = new Intent();
-    pandingIntent.setClassName(mContext, PromApkConstants.HOST_PROXY_SERVICE_CLASS_PATH);
+    pandingIntent.setClassName("com.mf", MFApkService.class.getName());
     pandingIntent.putExtra(BundleConstants.BUNDLE_KEY_SERVICE_ID_APK, serviceId);
     int id = serviceId;
     if (b != null) {

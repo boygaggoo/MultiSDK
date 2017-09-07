@@ -65,7 +65,7 @@ public class LocalService extends Service {
 
         ComponentName component = target.getComponent();
         LoadedPlugin plugin = mPluginManager.getLoadedPlugin(component);
-
+        Log.e(TAG, "onStartCommand: command " + command );
         switch (command) {
             case EXTRA_COMMAND_START_SERVICE: {
                 ActivityThread mainThread = (ActivityThread) ReflectUtil.getActivityThread(getBaseContext());
@@ -76,8 +76,8 @@ public class LocalService extends Service {
                     service = this.mPluginManager.getComponentsHandler().getService(component);
                 } else {
                     try {
+                        Log.e(TAG, "onStartCommand: " + " component " + component.getClassName());
                         service = (Service) plugin.getClassLoader().loadClass(component.getClassName()).newInstance();
-
                         Application app = plugin.getApplication();
                         IBinder token = appThread.asBinder();
                         Method attach = service.getClass().getMethod("attach", Context.class, ActivityThread.class, String.class, IBinder.class, Application.class, Object.class);
@@ -87,10 +87,11 @@ public class LocalService extends Service {
                         service.onCreate();
                         this.mPluginManager.getComponentsHandler().rememberService(component, service);
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         return START_STICKY;
                     }
                 }
-
+                Log.e(TAG, "onStartCommand: service " + service.getPackageName() );
                 service.onStartCommand(target, 0, this.mPluginManager.getComponentsHandler().getServiceCounter(service).getAndIncrement());
                 break;
             }

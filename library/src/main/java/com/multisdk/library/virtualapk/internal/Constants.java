@@ -9,7 +9,7 @@ public class Constants {
     public static final String NATIVE_DIR = "valibs";
 
     public static final boolean COMBINE_RESOURCES = false;
-    public static final boolean COMBINE_CLASSLOADER = true;
+    public static final boolean COMBINE_CLASSLOADER = false;
     public static final boolean DEBUG = true;
 
 }

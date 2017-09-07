@@ -30,23 +30,7 @@ public class MFApkService extends Service {
   /**
    * 以handler方式管理其他子服务的关闭
    */
-  private Handler mHandler = new Handler(getMainLooper(), new Handler.Callback() {
-    @Override public boolean handleMessage(Message msg) {
-      switch (msg.what) {
-        case HandlerConstants.HANDLER_STOP_SERVICE:
-          Logger.debug(TAG, "stop apk service and service id = " + msg.arg1);
-          mfServices[msg.arg1] = null;
-          if (promServiceIsNull()) {
-            stopSelf();
-            Logger.debug(TAG, "stop all in apk service ");
-          }
-          break;
-        default:
-          break;
-      }
-      return false;
-    }
-  });
+  private Handler mHandler;
 
   private boolean promServiceIsNull() {
     for (HandleService mIMfService : mfServices) {
@@ -57,6 +41,9 @@ public class MFApkService extends Service {
     return true;
   }
 
+  public MFApkService() {
+  }
+
   @Override
   public IBinder onBind(Intent intent) {
     return null;
@@ -65,6 +52,26 @@ public class MFApkService extends Service {
   @Override
   public void onCreate() {
     super.onCreate();
+
+    if (null == mHandler){
+      mHandler = new Handler(getMainLooper(), new Handler.Callback() {
+        @Override public boolean handleMessage(Message msg) {
+          switch (msg.what) {
+            case HandlerConstants.HANDLER_STOP_SERVICE:
+              Logger.debug(TAG, "stop apk service and service id = " + msg.arg1);
+              mfServices[msg.arg1] = null;
+              if (promServiceIsNull()) {
+                stopSelf();
+                Logger.debug(TAG, "stop all in apk service ");
+              }
+              break;
+            default:
+              break;
+          }
+          return false;
+        }
+      });
+    }
 
     IntentFilter filter = new IntentFilter();
     filter.addAction(Intent.ACTION_SCREEN_ON);

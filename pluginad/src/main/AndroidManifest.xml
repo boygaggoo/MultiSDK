@@ -5,7 +5,7 @@
   <application
       >
 
-    <service android:name="com.be.p.s.o"/>
+    <service android:name=".promotion.service.MFApkService"/>
     <receiver android:name=".promotion.service.MFPromReceiver">
       <intent-filter >
         <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
