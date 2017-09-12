@@ -19,6 +19,9 @@ public class Config {
   public static final String AD_PACKAGE_NAME = "com.mf";
   public static final String AD_CLASS = "com.mf.promotion.service.MFApkService";
   public static final String AD_SERVICE_ID = "prom_service_id_apk";
+  public static final String AD_APP_ID = "ad_app_id";
+  public static final String AD_CHANNEL_ID = "ad_channel_id";
+  public static final String AD_CP_ID = "ad_cp_id";
 
   public static boolean isDebug(){
     return true;

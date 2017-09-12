@@ -83,8 +83,7 @@ public class TerminalInfoUtil {
       m_TerminalInfoForZone.setOsVer("android");
     }
     try {
-      DisplayMetrics dm = new DisplayMetrics();
-      dm = c.getResources().getDisplayMetrics();
+      DisplayMetrics dm = c.getResources().getDisplayMetrics();
       m_TerminalInfoForZone.setScreenWidth((short) dm.widthPixels);
       m_TerminalInfoForZone.setScreenHeight((short) dm.heightPixels);
     } catch (Exception e) {

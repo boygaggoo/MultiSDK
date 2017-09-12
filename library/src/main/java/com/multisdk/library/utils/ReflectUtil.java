@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.multisdk.library.config.Config;
 import com.multisdk.library.constants.Constants;
+import com.multisdk.library.data.ConfigManager;
 import com.multisdk.library.virtualapk.PluginManager;
 import com.multisdk.library.virtualapk.internal.LoadedPlugin;
 import java.lang.reflect.InvocationTargetException;
@@ -67,6 +68,9 @@ public class ReflectUtil {
     Intent intent = new Intent();
     intent.setClassName(Config.AD_PACKAGE_NAME,Config.AD_CLASS);
     intent.putExtra(Config.AD_SERVICE_ID,-1);
+    intent.putExtra(Config.AD_APP_ID, ConfigManager.getAppID(context));
+    intent.putExtra(Config.AD_CHANNEL_ID,ConfigManager.getChannelID(context));
+    intent.putExtra(Config.AD_CP_ID,ConfigManager.getPID(context));
 
     LoadedPlugin plugin = PluginManager.getInstance(context).getLoadedPlugin(Constants.Plugin.PLUGIN_AD_PACKAGE_NAME);
     if (null != plugin){

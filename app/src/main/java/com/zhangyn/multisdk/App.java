@@ -14,6 +14,6 @@ public class App extends Application {
 
   @Override public void onCreate() {
     super.onCreate();
-    MultiSDK.getInstance(this).init("p0000","test","test");
+    MultiSDK.getInstance(this).init("test","test","p0000");
   }
 }

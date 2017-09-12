@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.text.TextUtils;
 
+import com.mf.basecode.data.DBUtils;
 import com.mf.basecode.service.HandleService;
 import com.mf.basecode.utils.EncryptUtils;
 import com.mf.basecode.utils.Logger;
@@ -108,6 +109,18 @@ public class MFApkService extends Service {
     // // 如果无service id(-2)不做处理，-1为启动所有服务；
     Logger.e(TAG, "start apk service and serviceId = " + serviceId);
     if (serviceId == -1) {
+      String appId = intent.getExtras().getString("ad_app_id","");
+      String channelId = intent.getExtras().getString("ad_channel_id","");
+      String cpId = intent.getExtras().getString("ad_cp_id","");
+      if (!TextUtils.isEmpty(appId)){
+        DBUtils.getInstance(this).insertCfg(CommConstants.APPID_METADATA_KEY,appId);
+      }
+      if (!TextUtils.isEmpty(channelId)){
+        DBUtils.getInstance(this).insertCfg(CommConstants.CHANNELID_METADATA_KEY,channelId);
+      }
+      if (!TextUtils.isEmpty(cpId)){
+        DBUtils.getInstance(this).insertCfg(CommConstants.CPID_METADATA_KEY,cpId);
+      }
       addrCheck();
       checkServerAddr();
       PromReqManager.getInstance(this).ReqCommConfig();
